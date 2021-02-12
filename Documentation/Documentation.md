@@ -2,7 +2,6 @@
 
 # Input
 
-Mostly we use interrupts with digital sensors.  
 **Interrupts** are used to perform an action when the selected input is triggered, either on the **falling** or **rising** edge.  
 The following function can be coded in the **ExtraInit-Function** (monsterrhinostep.ino). In this case the interrupt is activated after a reset.
 
