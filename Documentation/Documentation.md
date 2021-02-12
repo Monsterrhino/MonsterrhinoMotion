@@ -323,7 +323,7 @@ Switch 1 (SW1, CAN TERM) activates CAN termination resistor (120 Ohm).
 Switch 2 (SW2, BOARD ID) indicates CAN address (BoardID+2) as follows:
 
 1     |2    |Address|Board ID
--     |-    |-     |-
+-----|------|------|-----
 LOW   |LOW  |   2  |0
 HIGH  |LOW  |   3  |1
 LOW   |HIGH |   4  |2
