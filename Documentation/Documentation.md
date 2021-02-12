@@ -1,7 +1,7 @@
 # Readme - Monsterrhino Stepper controller
 
 # Input
-
+  
 **Interrupts** are used to perform an action when the selected input is triggered, either on the **falling** or **rising** edge.  
 The following function can be coded in the **ExtraInit-Function** (monsterrhinostep.ino). In this case the interrupt is activated after a reset.
 
@@ -333,21 +333,4 @@ HIGH  |HIGH |   5  |3
 Address 0 is reserved for a broadcast message.  
 Address 1 is reserved for other devices.  
 
-# TODO
 
-## Main functions 
-
-* Outputs (Digital/Analog)
-
-## Special functions  
-
-* Stealth chop
-* Power stage tuning
-* Stealth guard
-* Analog in
-* SPI/I2C
-
-## Examples
-
-* Roboterarm
-* 3D-printer
