@@ -10,14 +10,16 @@
 
 void MotorInit()
 {
-	g_Motor1.LoadMotorParameter();
-	g_Motor1.SetMotorCurrent(100);
-	g_Motor1.SetMotorCurrentHold(50);
-	g_Motor1.Begin();
-	g_Motor1.ResetRampStatus();
+	g_Motor1.LoadMotorParameter();		//Loads default motor values (SenseResitor, Current, ...)
+
+	g_Motor1.SetMotorCurrent(100);		//Motor current in mA (0.001 Ampere)
+	g_Motor1.SetMotorCurrentHold(50);	//Motor standstill current
+
+	g_Motor1.Begin();					//				
+
+	g_Motor1.ResetRampStatus();			//Reset RampStatus flags
 	g_Motor1.SetRampSpeeds(g_Motor1.GetStartup_RampSpeedsStart(), g_Motor1.GetStartup_RampSpeedsStop(), g_Motor1.GetStartup_RampSpeedsHold()); //Start, stop, threshold speeds
 	g_Motor1.SetAccelerations(g_Motor1.GetStartup_AccelerationsAMax(), g_Motor1.GetStartup_AccelerationsDMax(), g_Motor1.GetStartup_AccelerationsA1(), g_Motor1.GetStartup_AccelerationsD1()); //AMAX, DMAX, A1, D1
-
 	return;
 }
 

@@ -2,7 +2,9 @@
 
 # Get started
 
-## Monsterrhino installation guide
+![](Images/Monsterrhino_Motion_Datasheet.png)
+
+# Monsterrhino installation guide
 
 ## Install Java Runtime Environment
 
