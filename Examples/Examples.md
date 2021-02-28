@@ -1,12 +1,20 @@
+---
+title: "Monsterrhino Motion: EXAMPLES"
+output: 
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
 
-# Get started
+# Getting started
 
 MonsterrhinoMotion features three main ways to be controlled:  
 
-### USB
+## USB
 UART is the simplest way to give commands. MonsterrhinoMotion can be controlled directly, out of the box, via UART-communication.  
 
-Just open your serial command window and select the following settings and the COM-port of your MonsterrhinoMotion.  
+Just open the serial command window and select the following settings and the COM-port of your MonsterrhinoMotion.  
 After a successful connection with your MonsterrhinoMotion you can send commands as shown here:  
 (**Attention:** Motion needs to be in normal mode **not** boot mode! Led is blinking)
 ```
@@ -19,26 +27,29 @@ m2cp ?    (MOtor 2 returns current position)
 ```
 **Note:** A list of all UART-commands can be found in the documentation (~/Documentation).
 
-### CAN
+## CAN
 CAN is a commonly used communication system in automotive, automation and others.  
 Due to its high reliability and higher speed than UART it can be used to communicate with the Motion from another Motion or, as an example, a RaspberryPi or Arduino (with their CAN-module).
 For further information see the documentation (~/Documentation).
 
-### Programming the Motion
+[TODO: Insert image of simple CAN functionality]: <>
+
+## Programming the Motion
 It is possible to program various functions on the Motion, this enables a fully autonomous and dynamic system.  
 The main structure of the code consists of six "UserFunction" files (User_Function1.cpp) and the main file ("monsterrhinostep.ino").  
 
-The **"main" file** is used to declare main initialization as interrupt actions and ?. Its similar to the Arduino "void setup()"" function.  
-The six **"UserFunctions"** are used for programming actions. The can be executed simultaneously.
+- **"monsterrhinostep.ino":** The "main" file is used to declare main initialization as interrupt actions. Its similar to the Arduino "void setup()"" function.  
+- **"User_Function(X).cpp":** A total of six "UserFunctions" are used for programming actions. They can be executed simultaneously.
+
 The following examples show you how to program easy movements of stepper motors, changing motor behavior,... .  
 
 [TODO: Insert image of file blocks main, userfunc1,etc]: <>
 
-# Monsterrhino Motion Examples
+# Programming Examples
 
 This documentation shows you easy and more complex ways to program a MonsterrhinoMotion.
 
-## 1) Motor setup
+## Motor setup
 *(~/ExamplesCpp/Example1_MotorSetup.cpp)*
 
 To run a stepper motor, first you need to set up the main motor parameters as motor current, speed, acceleration and others.
@@ -69,7 +80,7 @@ uint32_t UserFunction1(uint32_t par, UserFunction* pUserFunction)
 ```
 In the following examples the function "MotorInit" is used but not shown.  
 
-## 2) Target position
+## Target position
 *(~/ExamplesCpp/Example2_TargetPosition.cpp)*  
 
 With the motor-command **SetTargetPosition** you can choose a desired position of your motor, which it will reach.  
@@ -94,12 +105,11 @@ g_Motor1.SetCurrentPosition(10);
 g_Motor1.SetMoveRelative(150);  
 //Motor moves 150 steps relative from current position
 ```
-## 3) Homing
+## Homing
 *(~/ExamplesCpp/Example3_Homing.cpp)*  
 
 Homing is used to have a reference point in your mechanical system. After successful homing you have the start point of your system.  
 As an example a 3d printer uses two-axis homing to get the XY-system start point (X=0, Y=0).  
-![](Images/Homing.gif)
 
 In homing you can set various parameters to adjust speed, acceleration, offset and many more. This can be programmed as shown here:  
 ```C++
@@ -149,3 +159,19 @@ uint32_t UserFunction1(uint32_t par, UserFunction* pUserFunction)
 	return 1;
 }
 ```
+
+## Input
+*(~/ExamplesCpp/Example4_Input.cpp)*  
+
+The MonsterrhinoMotion is able to read 12 digital inputs. These inputs can be set as an interrupt or can be controlled during a process manually.
+
+An interrupt reacts either to a rising or falling edge of the input pin (LOW->HIGH or HIGH->LOW). If this event occurs a selected action can be chosen.  
+
+In this example we use "input1" with a rising event (event is active when input changes from low to high). As action we choose the start of Userfunction2:
+```C++
+void ExtraInit()
+{
+	g_Input1.SetRunRisingFunction(INPUT_RUN_USERFUNCTION_START_2);
+}
+```
+More options for an interrupt declaration can be found in the documentation.

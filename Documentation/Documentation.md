@@ -1,101 +1,213 @@
-# Readme - Monsterrhino Stepper controller
+---
+title: "Monsterrhino Motion: DOCUMENTATION"
+output: 
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
+# Motor
+## Ramp behavior
 
-# Input
-  
-**Interrupts** are used to perform an action when the selected input is triggered, either on the **falling** or **rising** edge.  
-The following function can be coded in the **ExtraInit-Function** (monsterrhinostep.ino). In this case the interrupt is activated after a reset.
+![Ramp behavior](Images/TMC5160_rampBeh.png)
 
-```C++
-g_Input1.SetRunFallingFunction(INPUT_RUN_MOTOR_STOP_1);
-```
-**Actions:**
-These are the defined values for an action, beginning with **INPUT_RUN_**:  
-  
-- NONE  
-- USERFUNCTION_START_*[UserFunctionNr]* + *[SubFunctionNr]*  
-- USERFUNCTION_STOP_*[UserFunctionNr]*  +	*[SubFunctionNr]*  
-- MOTOR_STOP_[MOTOR_NR]  
-- MOTOR_EMERGENCYSTOP_[MOTOR_NR] 
-    
-**Note:** All combinations are possible when using a motor action.  
-**Examples:**  
-```C++
-g_Input1.SetRunFallingFunction(INPUT_RUN_MOTOR_STOP_1);
-//Stop motor 1 at falling edge on input 1
-
-g_Input2.SetRunRisingFunction(INPUT_RUN_MOTOR_STOP_2_3_4);
-//Stop motor 2,3 and 4 at rising edge on input 2
-
-g_Input3.SetRunRisingFunction(INPUT_RUN_MOTOR_STOP_1_2_3_4);
-//Stop motor 1,2,3 and 4 at rising edge on input 3
-
-g_Input4.SetRunFallingFunction(INPUT_RUN_USERFUNCTION_1 + 2); 
-//Start user function 1 sub 2 at falling edge on input 4
-```  
-**see also:** Input serial commands
-
-# User Functions
-
-## Variables
-Each UserFunction has a total of **12 public variables** with two types (uint32, double) each 6.  These variables have the ability to be read and/or set over CAN communication.
-This variables can be used in CAN-communication.
-```C++
-pUserFunction->m_variable[0] = 0; //m_variable[0]=0 of current UserFunction
-pUserFunction->m_variableFloat[4] = 3.45;
-```
-
-## Events  
-Events provide the machine to react on different actions depending on motor status, user function status, input status and time.  
-
-```C++
-pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR1PosReached);
-//TODO: Add other examples
-```
-
-## Ramp mode
-```C++
-g_Motor1.SetRampMode(MotorClass::RampMode::VELOCITY_MODE)
-```
- 
-
-There are three different ramp modes:  
-
-* **Positioning**: Motor turns til it reached its target point.  
-* **Velocity**: Motor velocity to max speed (using Amax).
-* **Hold**: Velocity remains unchanged, unless stop event occurs. 
-
-Motor control features different parameters to adjust ramp properties.  
-Such as:  
+Following the ramp behavior you can adjust the parameters:  
 
 * **Acceleration:** Start(A1) and Max(Amax)
 * **Deceleration:** Final(D1) and Max(Dmax)
 * **MaxSpeed:** From 0 to ?
 * **RampSpeed:** Start,Stop,Hold  
 
-**See also:** Serial commands for motor ramp mode (*m1rm (v,p,h or ?)*)
-**TODO:** Graph
+An example to set these parameters (with the startup values) is shown here.
+```C++
+g_Motor1.SetRampSpeeds(
+g_Motor1.GetStartup_RampSpeedsStart(), g_Motor1.GetStartup_RampSpeedsStop(), g_Motor1.GetStartup_RampSpeedsHold()
+); //V1,VMAX, VSTOP
 
-### Positioning Mode  
+g_Motor1.SetAccelerations(
+g_Motor1.GetStartup_AccelerationsAMax(), g_Motor1.GetStartup_AccelerationsDMax(), g_Motor1.GetStartup_AccelerationsA1(), g_Motor1.GetStartup_AccelerationsD1()
+); //AMAX, DMAX, A1, D1
+```
 
-There are different options:  
+
+**See also:** Serial [Motor commands] ramp mode (*m1rs,m1rc, m1as*)
+
+## Ramp mode
+```C++
+g_Motor1.SetRampMode(MotorClass::RampMode::VELOCITY_MODE)
+```
+
+There are three different ramp modes:  
+
+* **[Positioning mode]:** Motor turns til it reached its target point.  
+* **[Velocity mode]:** Motor velocity to max speed.
+* **[Hold mode]:** Velocity remains unchanged, unless stop event occurs. 
+
+**See also:** Serial [Motor commands] ramp mode (*m1rm (v,p,h or ?)*)
+
+### Positioning mode  
+
+This is the normal mode for a stepper motor.
+These two functions describe the main action that can be programmed:  
 
 * **TargetPosition**
 * **MoveRelative**  
 
 ```C++
-g_Motor1.SetTargetPosition(200.0);  //Set target position to 200 steps (double value)
-g_Motor1.SetMoveRelative(10.0);     //Set target position 10 steps relative from current position
+g_Motor1.SetTargetPosition(200.0);  
+//Set target position to 200 steps (double value)
+g_Motor1.SetMoveRelative(10.0);     
+//Set target position 10 steps relative from current position
 ```
 
-### Velocity Mode  
+### Velocity mode  
+In this mode the motor turns with the maximum speed.
+```C++
+g_Motor1.SetRampMode(MotorClass::RampMode::VELOCITY_MODE)
+//Set ramp mode to "VelocityMode"
+g_Motor1.SetMaxSpeed(100);
+//Set maximum speed to 100 steps/sec
+```
 
-When changed to this mode, max speed is zero. To begin set **max speed** to a value greather than 0.  
+**Note:** When changed to this mode, max speed is zero. To begin set **max speed** to a value greather than 0.  
 
-### Hold Mode
+### Hold mode
 
 Velocity remains unchanged, unless stop event occurs.
+TODO
 
-## Homing
+## Startup parameters
+
+Motors have many values that are set default after reset.  
+These values can be set with serial [Motor commands] or in the code. After you change one of the startup values you need to save the parameters with the serial command "s save".  
+The command "m1st ?" returns a list of all parameters.
+
+```
+Serial commands:
+m1st sr 100   
+//Set motor1 startup value of senseResisor to 100 Ohm
+s save        //System save
+```
+
+In the following list you can find all motor startup values. They can be read or set with these two functions:
+**SetStartup_** or **GetStartup_**  
+```C++
+g_Motor1.SetStartup_SenseResistor(200);
+//Set startup value for motor1 senseResistor to 200 Ohms
+```
+
+Function|Description
+---|------
+drvStrength           |
+bbmTime               |
+bbmClks               |
+SenseResistor         |Resistor for current measuring in mOhm
+MotorCurrent          |Motor current in mA
+MotorCurrentReduction |
+Freewheeling          |Reduce motor current to 0mA in standstill
+Iholddelay            |
+PwmofsInitial         |
+PwmGradInitial        |
+StepperDirection      |Direction of stepper motor
+MotorSteps            |Full steps of stepper motor
+PWMThrsInt            |
+PWMThrs               |
+COOLThrsInt           |
+COOLThrs              |
+HighThrs              |
+HighThrsInt           |
+SWMode                |see [Limit switch]
+RampMode              |see [Ramp mode]
+RampMaxSpeed          |Vmax ([Ramp behavior])
+RampMaxSpeedInt       |Vmax integer ([Ramp behavior])
+RampSpeedsStartInt    |Vstart integer ([Ramp behavior])
+RampSpeedsStart       |Vstart ([Ramp behavior])
+RampSpeedsHoldInt     |V1 integer ([Ramp behavior])
+RampSpeedsHold        |V1 ([Ramp behavior])
+RampSpeedsStopInt     |Vstop integer ([Ramp behavior])
+RampSpeedsStop        |Vstop ([Ramp behavior])
+AccelerationsAMaxInt  |Maximal acceleration integer
+AccelerationsAMax     |Maximal acceleration
+AccelerationsDMaxInt  |Maximal deceleration integer
+AccelerationsDMax     |Maximal deceleration
+AccelerationsA1Int    |Initial acceleration integer
+AccelerationsA1       |Initial acceleration
+AccelerationsD1Int    |Initial deceleration integer
+AccelerationsD1       |Initial deceleration
+HomingMode            |See parameter "mode" in [Homing]
+HomingOffsetInt       |Homing offset integer
+HomingOffset          |Homing offset
+HomingMaxPos          |Homing max. position
+HomingTimeout         |Homing timeout
+HomingSpeed2Int       |Homing speed second contact integer
+HomingSpeed2          |Homing speed second contact
+HomingDmaxInt         |Homing max deceleration integer
+HomingDmax            |Homing max deceleration
+COOLCONF              |
+                      |
+EncoderResolution     |
+EncoderAlloweddeviation|
+EncoderSetup          |
+EncoderInverted       |
+
+## Limit switch
+
+![](Images/LS.gif)
+
+It is possible to use various types for limit sensing:  
+
+* **Limit switch:** Two limit switches per motor, can be of any type (mechanical, inductive, ...).  
+Connection through the corresponding JST-XH connector CN[6,8,10,12] (for Motor 1,2,3,4)  
+* **Sensorless:** The motor stops at a set force on the motor shaft.
+
+Properties for motor limit switch configuration are set with following parameters:  
+
+* **stop_l_enable:**  Enable automatic motor stop during active left reference switch input
+* **stop_r_enable:**  Enable automatic motor stop during active right reference switch input
+* **pol_stop_l:** Sets the active polarity of the left reference switch input (1=inverted, low active, a low level on REFL stops the motor)
+* **pol_stop_r:** Sets the active polarity of the right reference switch input (1=inverted, low active, a low level on REFR stops the motor
+* **swap_lr:**  Swap the left and the right reference switch inputs
+* **latch_l_inactive:** Activate latching of the position to XLATCH upon an inactive going edge on REFL
+* **latch_r_inactive:** Activate latching of the position to XLATCH upon an inactive going edge on REFR
+* **latch_l_active:** Activate latching of the position to XLATCH upon an active going edge on REFL
+* **latch_r_active:** Activate latching of the position to XLATCH upon an active going edge on REFR
+* **en_latch_encoder:** Latch encoder position to ENC_LATCH upon reference switch event
+* **sg_stop:** Enable stop by stallGuard2 (also available in dcStep mode). Disable to release motor after stop event.
+* **en_softstop:** Enable soft stop upon a stop event (uses the deceleration ramp settings)
+
+Example:  
+```
+Serial commands:
+m1swm sle 1   
+//Motor1 stop left enable
+m1swm sre 1   
+//Motor1 stop right enable
+m1tp 10000
+//Motor turns to targetPos 10000
+//if the right limit switch is activated the motor stops (position not reached!)
+```
+or  
+```C++
+TMC5160_Reg::SW_MODE_Register swMode;
+swMode.stop_l_enable = 1;
+//stop left enable
+swMode.stop_r_enable = 1;
+//stop right enable
+g_Motor1.SetSW_Mode(swMode);
+//set selected options for motor1 swMode
+
+g_Motor1.SetTargetPosition(1000);
+//Set target position to 1000
+```
+
+## Special functions  
+
+Special functions are stall guard, coolStepping, power stage tuning and stealth chop.
+
+# Homing
+
+![](Images/Homing.gif)
+
 Homing has four main steps:  
 
 1) **First contact** with limit switch  
@@ -124,108 +236,82 @@ g_Motor1.m_HomingParameters.homingOffset = 15.0;
 * **accelerationsA1:**  Start acceleration
 * **accelerationsD1:**  Finish deceleration
 
-**Note:**
-In step 2, if switch is still pressed after 50 steps, this step will repeat.
+**Note:**  
+In step 2, if switch is still pressed after 50 steps, this step will repeat.  
 In step 3, motor turns 100 steps til it reaches the limit switch, otherwise there is a homing error.
 The motor gets set in POSITIONING MODE when homing. 
 Step 4 speed is startup_maxSpeed.
 
 TODO: Latched pos ?, Graph
 
-## Limit switch
-It is possible to use various types for limit sensing:  
-
-* **Limit switch:** Two limit switches per motor, can be of any type (mechanical, inductive, ...).  
-Connection through the corresponding JST-XH connector CN[6,8,10,12] (for Motor 1,2,3,4)  
-* **Latch:** TODO  
-* **Stall_Guard:** The motor stops at a set force on the motor shaft.
-
-Properties for motor limit switch config are set with following parameters:  
-
-* **stop_l_enable:**  Enable automatic motor stop during active left reference switch input
-* **stop_r_enable:**  Enable automatic motor stop during active right reference switch input
-* **pol_stop_l:** Sets the active polarity of the left reference switch input (1=inverted, low active, a low level on REFL stops the motor)
-* **pol_stop_r:** Sets the active polarity of the right reference switch input (1=inverted, low active, a low level on REFR stops the motor
-* **swap_lr:**  Swap the left and the right reference switch inputs
-* **latch_l_inactive:** Activate latching of the position to XLATCH upon an inactive going edge on REFL
-* **latch_r_inactive:** Activate latching of the position to XLATCH upon an inactive going edge on REFR
-* **latch_l_active:** Activate latching of the position to XLATCH upon an active going edge on REFL
-* **latch_r_active:** Activate latching of the position to XLATCH upon an active going edge on REFR
-* **en_latch_encoder:** Latch encoder position to ENC_LATCH upon reference switch event
-* **sg_stop:** Enable stop by stallGuard2 (also available in dcStep mode). Disable to release motor after stop event.
-* **en_softstop:** Enable soft stop upon a stop event (uses the deceleration ramp settings)
-
-# Motor
-
-## Special functions  
-
-Special functions are stall guard, coolStepping, power stage tuning and stealth chop.
+# User Function
 
 
 
-## Parameter
+## Events  
+Events provide the machine to react on different actions depending on motor status, user function status, input status and time.  
 
-Motors have many values that are set default after reset.  
-The motor class has instances for each motor.  
 ```C++
-g_Motor1.SetMaxSpeed(300);    //motor1
+pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR1PosReached);
+//TODO: Add other examples
 ```
-Motor startup parameter functions: 
-**SetStartup_** or **GetStartup_**  
 
-Function|Description
----|------
-drvStrength           |
-bbmTime               |
-bbmClks               |
-SenseResistor         |Resistor for current measuring in mOhm
-MotorCurrent          |Motor current in mA
-MotorCurrentReduction |
-Freewheeling          |
-Iholddelay            |
-PwmofsInitial         |
-PwmGradInitial        |
-StepperDirection      |
-MotorSteps            |
-PWMThrsInt            |
-PWMThrs               |
-COOLThrsInt           |
-COOLThrs              |
-HighThrs              |
-HighThrsInt           |
-SWMode                |
-RampMode              |
-RampMaxSpeed          |
-RampMaxSpeedInt       |
-RampSpeedsStartInt    |
-RampSpeedsStart       |
-RampSpeedsHoldInt     |
-RampSpeedsHold        |
-RampSpeedsStopInt     |
-RampSpeedsStop        |
-AccelerationsAMaxInt  |
-AccelerationsAMax     |Maximal Acceleration
-AccelerationsDMaxInt  |
-AccelerationsDMax     |Maximal Deceleration
-AccelerationsA1Int    |
-AccelerationsA1       |Initial Acceleration
-AccelerationsD1Int    |
-AccelerationsD1       |Initial Deceleration
-HomingMode            |
-HomingOffsetInt       |
-HomingOffset          |Homing Offset
-HomingMaxPos          |
-HomingTimeout         |
-HomingSpeed2Int       |
-HomingSpeed2          |
-HomingDmaxInt         |
-HomingDmax            |
-COOLCONF              |
-                      |
-EncoderResolution     |
-EncoderAlloweddeviation|
-EncoderSetup          |
-EncoderInverted       |
+# Input
+  
+**Interrupts** are used to perform an action when the selected input is triggered, either on the **falling** or **rising** edge.  
+The following function can be coded in the **ExtraInit-Function** (monsterrhinostep.ino). In this case the interrupt is activated after a reset.
+
+```C++
+g_Input1.SetRunFallingFunction(INPUT_RUN_MOTOR_STOP_1);
+```
+**Actions:**
+These are the defined values for an action, beginning with **INPUT_RUN_**:  
+  
+- NONE  
+- USERFUNCTION_START_*[UserFunctionNr]* + *[SubFunctionNr]*  
+- USERFUNCTION_STOP_*[UserFunctionNr]*  +	*[SubFunctionNr]*  
+- MOTOR_STOP_[MOTOR_NR]  
+- MOTOR_EMERGENCYSTOP_[MOTOR_NR] 
+    
+**Note:** All combinations are possible when using a motor action.  
+ 
+```C++
+g_Input1.SetRunFallingFunction(INPUT_RUN_MOTOR_STOP_1);
+//Stop motor 1 at falling edge on input 1
+
+g_Input2.SetRunRisingFunction(INPUT_RUN_MOTOR_STOP_2_3_4);
+//Stop motor 2,3 and 4 at rising edge on input 2
+
+g_Input3.SetRunRisingFunction(INPUT_RUN_MOTOR_STOP_1_2_3_4);
+//Stop motor 1,2,3 and 4 at rising edge on input 3
+
+g_Input4.SetRunFallingFunction(INPUT_RUN_USERFUNCTION_1 + 2); 
+//Start user function 1 sub 2 (parameter Par=2) at falling edge on input 4
+```  
+The state of an input can also be read with the digitalRead-function.  
+```C++
+if(digitalRead(g_Input1)==1){
+  Serial.print("Hello world");
+}
+```
+Example:
+![](Images/Input.gif)
+```C++
+//FILE "monsterrhinostep.ino":
+void ExtraInit(){
+  g_Input1.SetRunFallingFunction(INPUT_RUN_MOTOR_STOP_1);
+  g_Motor1.SetTargetPosition(1000);
+  return;
+}
+
+//FILE "User_Function1.cpp":
+void Userfunction1(){
+  g_Motor1.SetTargetPosition(0);
+  return;
+}
+
+```
+**see also:** [Input commands]
 
 # Communication
 This board offers two main types of communication:  
@@ -235,13 +321,33 @@ This board offers two main types of communication:
 
 ## Serial U(S)ART
 
+UART is the simplest way to give commands. MonsterrhinoMotion can be controlled directly, out of the box, via UART-communication.  
+
+Just open the serial command window and select the following settings and the COM-port of your MonsterrhinoMotion.  
+After a successful connection with your MonsterrhinoMotion you can send commands as shown here:  
+
 Serial communication is possible via USB. The following properties should be set to ensure correct data transfer:
 
 * U(S)ART support: generic 'Serial'
 * Line ending: Both CR & LF
+* Baud rate: 115200
 
 The serial command is build as follows:  
-[mainFunction][Nr][subFunction] (+optional: [value/subFunction2] [value])
+
+function + Nr + subFunction (+optional: value/subFunction2 + value)
+
+```
+m1tp 100  (Motor 1 target point 100 steps)
+m3mr 200  (Motor 3 move relative 200 steps)
+m2ma 100  (Motor 2 set motor current to 100mA)
+
+m3ma ?    (Motor 3 returns motor current in mA)
+m2cp ?    (MOtor 2 returns current position)
+```
+**Attention:** Motion needs to be in normal mode **not** boot mode! Led is blinking
+
+
+### Motor commands
 
 function|subfunction1|subfunction1|subfunction2
 -|--|---         |-----
@@ -275,10 +381,18 @@ m|st  |startup           |(?), other functions to set/get startup values
 m|ho  |homing            |(?), other functions to set/get homing values
 m|tsc |tunesteathchop    |-
 m|tps |tunestallguard    |-
--|----|------------------|-----------------------   
+
+### Input commands
+
+function|subfunction1|subfunction1|subfunction2
+-|--|---         |-----  
 i|if  |inputfunction     |
 i|st  |startup           |
--|----|------------------|-----------------------
+
+### System commands
+
+function|subfunction1|subfunction1|subfunction2
+-|--|---         |-----  
 s|sv  |softwareversion   |(?)
 s|hv  |hardwareversion   |(?)
 s|do  |door              |TODO
@@ -295,6 +409,9 @@ s|ld  |load              |-
 s|d   |debug             |-
 
 ## CAN
+
+CAN is a commonly used communication system in automotive, automation and others.  
+Due to its high reliability and higher speed than UART it can be used to communicate with the Motion from another Motion or, as an example, a RaspberryPi or Arduino (with their CAN-module).  
 
 Up to 4 Monsterrhino boards can be connected via CAN to communicate with each other. It is also possible to connect other devices that support CAN communication.  
 
@@ -319,10 +436,10 @@ In addition you can get and set **user function variables** via remoteCommand as
 
 ### Board setup for CAN  
 
-Switch 1 (SW1, CAN TERM) activates CAN termination resistor (120 Ohm).
+Switch 1 (SW1, CAN TERM) activates CAN termination resistor (120 Ohm) (1 is active).  
 Switch 2 (SW2, BOARD ID) indicates CAN address (BoardID+2) as follows:
 
-1     |2    |Address|Board ID
+SW2_1     |SW2_2    |Address|Board ID
 -----|------|------|-----
 LOW   |LOW  |   2  |0
 HIGH  |LOW  |   3  |1
@@ -333,4 +450,12 @@ HIGH  |HIGH |   5  |3
 Address 0 is reserved for a broadcast message.  
 Address 1 is reserved for other devices.  
 
-
+### Variables
+Each [User Function] has a total of **12 public variables** with two types (uint32, double) each 6.  These variables have the ability to be read and/or be set over CAN communication.  
+This variables can be used in CAN-communication.
+```C++
+pUserFunction->m_variable[0] = 0; //m_variable[0]=0 of current UserFunction
+pUserFunction->m_variableFloat[4] = 3.45;
+```
+**Note:** *m_variable[6]* is **no** variable because each Userfunction offers six of each type.  
+0-5 equals a total of 6.
