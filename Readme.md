@@ -1,8 +1,17 @@
-
+---
+title: "Monsterrhino Motion"
+output: 
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
 
 # Get started
 
-![](Images/Monsterrhino_Motion_Datasheet.png)
+![](Documentation/Images/Motion_illustrated.png){width=50%}
+
+![](Documentation/Images/Monsterrhino_Motion_Datasheet.png)
 
 # Monsterrhino installation guide
 
@@ -82,7 +91,7 @@
 * install Arduino Extension in Visual Studio: go to **Extension -> ManageExtensions -> Online**, search for **Arduino** and install **Arduino IDE for Visual Studio (Visual Micro)** (you will have to close Visual Studio during the installation process)
 * open the location configuration **Extensions -> vMicro -> General -> Configure Arduino IDE Location(s)** and enter the correct paths, it should look similar to the example in the image:  
 
-  ![](pics/config.jpg){width=50%}  
+  ![](Documentation/Images/config.jpg){width=50%}  
 
 * open project **monsterrhinostep** (/Documents/Arduino/monsterrhinostep.sln) in Visual Studio
 * adjust the vMicro settings (**Extensions -> vMicro**) to the same values as you did in your Arduino IDE (see **adjust the Arduino IDE settings like follows** above)
@@ -93,8 +102,8 @@
 
 
 
-
-# Commands
+# Other
+## Commands
 
 Description |shortcut1|shortcut2
 ------------|---------|--------
@@ -149,7 +158,7 @@ Mode|mo|mode ->
 	v or velocity
 	h or hold
 
-# Questions:
+## Questions:
 * pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR4PosReached); ??
 * How to wait for motor move to finish? while (g_Motor1.getCurrentPosition() != pos); Better way?
 * Homing with serial command?
@@ -159,7 +168,7 @@ Mode|mo|mode ->
 * How to use Homing function?
 * Hoe to call userfunction from other userfunction?
 
-# Change on hardware:
+## Change on hardware:
 * Emergeny poweroff off motors with Raspberry Pin and with Emergeny Poweroff button
 * 3.3 V instead of 5 V on the limit switch supply
 * LED for endswitch if possible
@@ -172,8 +181,7 @@ Mode|mo|mode ->
 * Add 10k pullup on RESET pin of MCP2515 CAN chip
 * Connect **CS Pin** of MCP2515 to **SPI_CE1_N** instead of **SPI_CE0_N** because 0 is used by the display, or make a switch to choose between them
 
-
-# To do firmware:
+## To do firmware:
 * Start all motor and sensor names with 0
 * Use CAN address switch for selecting relevant part of firmware
 * Implement CAN Bus

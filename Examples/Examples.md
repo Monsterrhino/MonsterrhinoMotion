@@ -45,7 +45,7 @@ The following examples show you how to program easy movements of stepper motors,
 
 [TODO: Insert image of file blocks main, userfunc1,etc]: <>
 
-# Programming Examples
+# Programming examples
 
 This documentation shows you easy and more complex ways to program a MonsterrhinoMotion.
 
@@ -86,6 +86,7 @@ In the following examples the function "MotorInit" is used but not shown.
 With the motor-command **SetTargetPosition** you can choose a desired position of your motor, which it will reach.  
 
 ```C++  
+//FILE: "User_Function1.cpp"
 uint32_t UserFunction1(uint32_t par, UserFunction* pUserFunction)
 {
 	MotorInit();									
@@ -113,6 +114,7 @@ As an example a 3d printer uses two-axis homing to get the XY-system start point
 
 In homing you can set various parameters to adjust speed, acceleration, offset and many more. This can be programmed as shown here:  
 ```C++
+//FILE: "User_Function1.cpp"
 void HomingInit()
 {
 	g_Motor1.m_HomingParameters.mode = 1;
@@ -130,22 +132,18 @@ void HomingInit()
 ```
 After the homing initialization you can begin with the homing action:
 ```C++
+//FILE: "User_Function1.cpp"
 uint32_t Homing(uint32_t par, UserFunction* pUserFunction)
 {
-	//Reset ramp status and current/target position and wait 500ms to ensure
+	//Reset ramp status and current/target position and wait 500ms to be sure
 	g_Motor3.SetCurrentPosition(0);
 	g_Motor3.SetTargetPosition(0);
 	g_Motor3.ResetRampStatus();
 	vTaskDelay(500);
-
-	//
+	
 	g_Motor3.MotorFunction_TiggerStart(MOTOR_FUNCTION_HOMING);
 	pUserFunction->MotorHomingOk(LOCK_MOTOR3, par);
 
-	g_Motor3.SetMaxSpeed(5);
-	g_Motor3.SetAcceleration(100);
-
-	Serial.println("yAxis homing done!");
 	return 1;
 }
 
@@ -169,9 +167,12 @@ An interrupt reacts either to a rising or falling edge of the input pin (LOW->HI
 
 In this example we use "input1" with a rising event (event is active when input changes from low to high). As action we choose the start of Userfunction2:
 ```C++
+//FILE: "monsterrhinostep.ino"
 void ExtraInit()
 {
 	g_Input1.SetRunRisingFunction(INPUT_RUN_USERFUNCTION_START_2);
 }
 ```
 More options for an interrupt declaration can be found in the documentation.
+
+# CAN examples

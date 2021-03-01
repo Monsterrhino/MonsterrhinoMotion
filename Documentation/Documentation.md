@@ -6,10 +6,79 @@ output:
     toc_float: true
     fig_caption: true
 ---
-# Motor
+
+![](Images/Monsterrhino_Images/Logo.png){width=20%}
+
+![](Images/Motion_illustrated.png){width=50%}
+
+# General
+**Monsterrhino Motion** is an independent stepper motor controller.  
+It can run up to 4 stepper motors at once - in parallel. The powerful MCU combined with our advanced firmware (multitasking capable - up to 6 user tasks) allows you to control stepper motors in the most simple way - you can program it with the Arduino IDE or with more advanced IDEs. Our firmware allows you to program the card at a high level e.g. you tell the motor to rotate continuously, make a 100 steps, etc. Further key features are limit switch connectors for each motor, encoder connectors, digital sensor inputs and digital/analog outputs. 
+The CAN interface offers reliable high performance communication with other devices such as Monsterrhino Motion, Monsterrhino Control, Raspberry Pi, Arduino and many more.
+
+Specs:  
+
+- **4** Stepper motors
+- **12** digital inputs
+- **1** digital output
+- **3** analog outputs
+- **
+
+
+
+## Programming the Motion
+It is possible to program various functions on the Motion, this enables a fully autonomous and dynamic system.  
+The main structure of the code consists of six "UserFunction" files (User_Function1.cpp) and the main file ("monsterrhinostep.ino").  
+
+The following image shows you the **main structure** of the files used to program the Motion:
+
+![](Images/ProgrammingStructure.png)
+
+**Note:** The loop function is **not used**, because all processes and actions are programmed in the "Userfunctions" that can be executed simultaneously.
+
+### "monsterrhinostep.ino"-file
+This file is used for main initialization.  
+Example:
+```C++
+#include <Wire.h>
+#include  "PortIni.h"
+
+void ExtraInit()
+{
+	g_Input1.SetRunRisingFunction(INPUT_RUN_USERFUNCTION_START_2 + 1);
+	//set Input1 interrupt at rising edge, Start userfunction 2 with parameter par=1
+}
+//------------------------------------------------------------------------------
+void setup() {
+	// Init IO
+	g_System.Init(ExtraInit);
+	ExtraInit();
+}
+```
+
+### User Function
+The six "UserFunction"-files can be programmed for any action. They can be started and stopped by inputs, CAN-commands, UART-commands or other userfunctions.  
+
+```
+Serial commands:
+f1s1
+//Start UserFunction1 with parameter par=1
+f2s2
+//Start UserFunction2 with parameter par=2 (even if function1 is not finished)
+f1t
+//Stop UserFunction1
+```
+
+Functions to start or stop other UserFunctions are:
+  
+```C++
+TODO
+```
+
+# Motor control
 ## Ramp behavior
 
-![Ramp behavior](Images/TMC5160_rampBeh.png)
+![Ramp behaviour (Datasheet TMC5160/A)](Images/TMC5160_rampBeh.png)
 
 Following the ramp behavior you can adjust the parameters:  
 
@@ -29,12 +98,14 @@ g_Motor1.GetStartup_AccelerationsAMax(), g_Motor1.GetStartup_AccelerationsDMax()
 ); //AMAX, DMAX, A1, D1
 ```
 
-
+**Note:** Value *Vstart* is default zero.  
 **See also:** Serial [Motor commands] ramp mode (*m1rs,m1rc, m1as*)
 
 ## Ramp mode
 ```C++
-g_Motor1.SetRampMode(MotorClass::RampMode::VELOCITY_MODE)
+g_Motor1.SetRampMode(MotorClass::RampMode::POSITIONING_MODE);
+g_Motor1.SetRampMode(MotorClass::RampMode::VELOCITY_MODE);
+g_Motor1.SetRampMode(MotorClass::RampMode::HOLD_MODE);
 ```
 
 There are three different ramp modes:  
@@ -45,7 +116,7 @@ There are three different ramp modes:
 
 **See also:** Serial [Motor commands] ramp mode (*m1rm (v,p,h or ?)*)
 
-### Positioning mode  
+### Positioning mode
 
 This is the normal mode for a stepper motor.
 These two functions describe the main action that can be programmed:  
@@ -73,8 +144,8 @@ g_Motor1.SetMaxSpeed(100);
 
 ### Hold mode
 
-Velocity remains unchanged, unless stop event occurs.
-TODO
+In this mode velocity remains unchanged, unless a stop event occurs.
+If you change velocity after ramp mode was set to hold mode nothing happens.
 
 ## Startup parameters
 
@@ -204,6 +275,13 @@ g_Motor1.SetTargetPosition(1000);
 
 Special functions are stall guard, coolStepping, power stage tuning and stealth chop.
 
+## Events
+Events provide the machine to react on different actions depending on motor status, user function status, input status and time.  
+
+```C++
+pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR1PosReached);
+//TODO: Add other examples
+```
 # Homing
 
 ![](Images/Homing.gif)
@@ -242,19 +320,19 @@ In step 3, motor turns 100 steps til it reaches the limit switch, otherwise ther
 The motor gets set in POSITIONING MODE when homing. 
 Step 4 speed is startup_maxSpeed.
 
-TODO: Latched pos ?, Graph
+TODO: Latched pos ?
 
-# User Function
-
-
-
-## Events  
-Events provide the machine to react on different actions depending on motor status, user function status, input status and time.  
+## Normal homing
+When setting the "MOTOR_FUNCTION_HOMING" start-trigger, the motor begins homing with the **pre-selected** parameters.  
+The next command is to keep the motor locked until the homing event is finished.  
 
 ```C++
-pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR1PosReached);
-//TODO: Add other examples
+g_Motor3.MotorFunction_TiggerStart(MOTOR_FUNCTION_HOMING);
+pUserFunction->MotorHomingOk(LOCK_MOTOR3, par);
 ```
+## Sensorless homing
+It is also possible to home without limit switches using StallGuard2.  
+TODO
 
 # Input
   
@@ -305,9 +383,9 @@ void ExtraInit(){
 }
 
 //FILE "User_Function1.cpp":
-void Userfunction1(){
+uint32_t UserFunction1(uint32_t par, UserFunction* pUserFunction)
   g_Motor1.SetTargetPosition(0);
-  return;
+  return 1;
 }
 
 ```
@@ -349,19 +427,19 @@ m2cp ?    (MOtor 2 returns current position)
 
 ### Motor commands
 
-function|subfunction1|subfunction1|subfunction2
+function|subfunction1|subfunction1|subfunction2/value
 -|--|---         |-----
-m|tp  |targetpos         |(value)
-m|cp  |currentpos        |(value)
-m|rm  |rampmode          |(value)
-m|ms  |maxspeed          |(value)
-m|cs  |currentspeed      |(value) only get
+m|tp  |targetpos         |(value) or (?)
+m|cp  |currentpos        |(value) or (?)
+m|rm  |rampmode          |v,p,h or (?)
+m|ms  |maxspeed          |(value) or (?)
+m|cs  |currentspeed      |(?)
 m|r   |register          |Controller Register?
-m|rs  |rampspeeds        |(3 values: start,stop,hold)
-m|ac  |acceleration      |(value) for A1,Amax,D1,Dmax
-m|as  |accelerations(    |(5 values: A1,D1,hold,Amax,Dmax)
+m|rs  |rampspeeds        |(3 values: start,stop,hold), (?) for more information
+m|ac  |acceleration      |(value) for A1,Amax,D1,Dmax, (?) for more information
+m|as  |accelerations(    |(5 values: A1,D1,hold,Amax,Dmax), (?) for more information
 m|s   |stop              |(value) TODO: no output in serial and afterwards problems
-m|en  |enable            |(value)
+m|en  |enable            |(value) or (?)
 m|ep  |encoderposition   |TODO
 m|lp  |latchedposition   |TODO
 m|le  |latchedencoder    |TODO
@@ -369,8 +447,8 @@ m|mr  |moverelative      |(value)
 m|mds |motordrvstatus    |(?), other functions to set/get drive status
 m|mrs |motorrampstat     |(?), other functions to set/get ramp status
 m|gs  |gstat             |(?), other functions
-m|ma  |currentma         |(value)
-m|fwm |freewheelingmode  |(value)
+m|ma  |currentma         |(value) or (?)
+m|fwm |freewheelingmode  |1,0 or (?)
 m|mcs |modechangespeeds  |(3 values: pwmThrs, coolThrs, highThrs)
 m|swm |swmode            |(?), other functions with value afterwards (s.a. LimitSW section)
 m|cc  |coolconf          |(?), other functions
