@@ -502,9 +502,452 @@ h or hold</p>
 </div>
 <div id="can-bus-communication" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> CAN bus communication</h1>
+<p>Commands can also be send over the CAN bus, therefore it is necessary to set the correct bits in the CAN frame.Following a description of the bits within the CAN frame.</p>
+<pre><code>21-28 ID  (8 Bit 0-255 0=broadcast 1-9 Bus controller )
+15-20 Function (6 Bit )
+9-14 Nr (6 Bit )
+2-8  Sub Function (7 Bit)
+1   RTR respond
+
+Implementation protocol V2:
+-Addressing
+      - Used frame format is extended (29 bit) Address 0-536.870.911
+        - Bit 0-3 Nummer (0-15)
+        - Bit 4-13  sub command (9 bit =512)        ;select sub command
+        - Bit 14-17 command (0-15)                  ;command
+            0 (&#39;s&#39;)                                 ;Sytem
+            1 (&#39;m&#39;)                                 ;Motor
+            2 (&#39;i&#39;)                                 ;Input
+            3 (&#39;f&#39;)                                 ;User function
+        - Bit 18    error                       ; active low
+        -Bit 19-23  to Address
+            0                                       ;is a Broadcast message             
+            2-31                                    ;to Address
+        -Bit 24-28  from Address
+            0                                       ;Bus controller
+            2-31                                    ;from Address
+        - Bit 29    dentifies respond message
+            0                                       ;respond message
+            1                                       ;send message
+        - Address range:
+            Address 0 = broadcast message
+            Address 1 = Bus controller
+            available address range for client is 2-31
+
+
+
+-Data Field
+    -Byte MSB-0     user return function_ID (0-127)
+                    Bit 0-7 (0-127)                 ;return function_ID
+                    Bit 7                           ; Set 1 = Get Value
+    -Byte MSB-1 &amp; MSB-7 &lt;Data&gt;      ;length and type depending on the register
+
+
+
+
+    - subCommand of motor command
+        0;  emergency stop
+            -no data
+        1;  stop
+            -no data
+        2;  enable/disable driver
+            -data type &lt;byte&gt;
+                0:disabel driver
+                1:enable driver
+        3;  RampMode (uint8) &lt;Set&gt;&lt;Get&gt;                                         RampMode
+            -data type &lt;uint8&gt;
+                0:                                                              Positioning mode (using all A, D and V parameters)
+                1:                                                              Velocity mode to positive VMAX (using AMAX acceleration)
+                2:                                                              Velocity mode to negative VMAX (using AMAX acceleration)
+                3:                                                              Hold mode (velocity remains unchanged,unless stop event occurs)
+        4;  TargetPosition (int48) &lt;Set&gt;&lt;Get&gt;                                   the target position (step*1000) /!\ Set all other motion profile parameters before
+            -data type &lt;double*1000&gt;
+        5;  TargetPosition Register (int32) &lt;Set&gt;&lt;Get&gt;                          the target position (micro steps) /!\ Set all other motion profile parameters before
+            -data type &lt;int32&gt;
+        6;  MoveRelative(int32) &lt;Set&gt;                                           Move motor relative (steps*1000)
+            -data type &lt;double*1000&gt;
+        7;  MoveRelative Register(int32) &lt;Set&gt;                                  Move motor relative (micro steps)
+            -data type &lt;int32&gt;
+        8;  CurrentPosition (int48) &lt;Set&gt;&lt;Get&gt;                                  the current internal position (steps*1000)
+            -data type &lt;double*1000&gt;
+        9;  CurrentPosition Register (int32) &lt;Set&gt;&lt;Get&gt;                         the current internal position (micro steps)
+            -data type &lt;micro steps&gt;
+        10; Max Speed (uint32) &lt;Set&gt;                                            the max speed VMAX
+            -data type &lt;float*1000&gt;
+        11; Max Speed Register (uint32) &lt;Set&gt;&lt;Get&gt;                              Register max speed VMAX
+            -data type &lt;uint32&gt;
+        12; Ramp speed Start(uint32) &lt;Set&gt;&lt;Get&gt;                                 the start ramp speed
+            -data type &lt;float*1000&gt;
+        13; Ramp speed Start Register (uint32) &lt;Set&gt;&lt;Get&gt;                       Register Ramp speed Start
+            -data type &lt;uint32&gt;
+        14; Ramp speed Stop(uint32) &lt;Set&gt;&lt;Get&gt;                                  the stop ramp speed
+            -data type &lt;float*1000&gt;
+        15; Ramp speed Stop Register (uint32) &lt;Set&gt;&lt;Get&gt;                        Register Ramp speed Stop
+            -data type &lt;uint32&gt;
+        16; Ramp speed Hold(uint32) &lt;Set&gt;&lt;Get&gt;                                  the hold ramp speed
+            -data type &lt;float*1000&gt;
+        17; Ramp speed Hold Register (uint32) &lt;Set&gt;&lt;Get&gt;                        Register Ramp speed Hold
+            -data type &lt;uint32&gt;
+        18; get Current Speed(uint32)   &lt;Get&gt;                                   Return the current speed
+            -data type &lt;float*1000&gt;
+        19; get Current Speed Register (uint32) &lt;Get&gt;                           Return the current  speed Register 
+            -data type &lt;uint32&gt;
+        20; Acceleration AMAX(uint32) &lt;Set&gt;&lt;Get&gt;                                 ramp accelerations AMAX
+            -data type &lt;float*1000&gt;
+        21;  Acceleration AMAX Register(uint32) &lt;Set&gt;&lt;Get&gt;                      Register  Acceleration AMAX
+            -data type &lt;uint32&gt;
+        22; Acceleration DMAX (uint32) &lt;Set&gt;&lt;Get&gt;                               ramp accelerations DMAX
+            -data type &lt;float*1000&gt;
+        23;  Acceleration DMAX Register(uint32) &lt;Set&gt;&lt;Get&gt;                      Register  Acceleration DMAX
+            -data type &lt;uint32&gt;
+        24; Acceleration A1(uint32) &lt;Set&gt;&lt;Get&gt;                                  ramp accelerations A1
+            -data type &lt;float*1000&gt;
+        25;  Acceleration A1 Register(uint32) &lt;Set&gt;&lt;Get&gt;                        Register  Acceleration A1
+            -data type &lt;uint32&gt;
+        26; Acceleration D1(uint32) &lt;Set&gt;&lt;Get&gt;                                  ramp accelerations D1
+            -data type &lt;float*1000&gt;
+        27;  Acceleration D1 Register(uint32) &lt;Set&gt;&lt;Get&gt;                        Register  Acceleration D1
+            -data type &lt;uint32&gt;
+        28; ModeChangeSpeeds pwmThrs(uint32) &lt;Set&gt;&lt;Get&gt;                         mode change speeds pwmThrs
+            -data type &lt;float*1000&gt;
+        28;  ModeChangeSpeeds pwmThrs Register(uint32) &lt;Set&gt;&lt;Get&gt;               Register  ModeChangeSpeeds pwmThrs
+            -data type &lt;uint32&gt;
+        30; ModeChangeSpeeds coolThrs(uint32) &lt;Set&gt;&lt;Get&gt;                        mode change speeds coolThrs
+            -data type &lt;float*1000&gt;
+        21;  ModeChangeSpeeds coolThrs Register(uint32) &lt;Set&gt;&lt;Get&gt;              Register ModeChangeSpeeds coolThrs
+            -data type &lt;uint32&gt;
+        32; ModeChangeSpeeds highThrs(uint32) &lt;Set&gt;&lt;Get&gt;                        mode change speeds highThrs
+            -data type &lt;float*1000&gt;
+        33;  ModeChangeSpeeds highThrs Register(uint32) &lt;Set&gt;&lt;Get&gt;              Register ModeChangeSpeeds highThrs
+            -data type &lt;uint32&gt;
+        34; Encoder Position (int48) &lt;Set&gt;&lt;Get&gt;                                 the current encoder position (micro steps)
+            -data type &lt;double*1000&gt;
+        35; Encoder Position Register(uint32) &lt;Set&gt;&lt;Get&gt;                        the current encoder position (steps*1000)
+            -data type &lt;uint32&gt;
+        36; Latched Position (int48) &lt;Set&gt;&lt;Get&gt;                                 the current latched position (micro steps)
+            -data type &lt;double*1000&gt;
+        37; Latched Position Register(uint32) &lt;Set&gt;&lt;Get&gt;                        the Latched position (steps*1000)
+            -data type &lt;uint32&gt;
+        38; LatchedEncoderPosition (int48) &lt;Set&gt;&lt;Get&gt;                           the current latched encoder position (steps*1000)
+            -data type &lt;double*1000&gt;
+        39; LatchedEncoderPosition Register(int32) &lt;Set&gt;&lt;Get&gt;                   the current latched encoder position (uSteps)
+            -data type &lt;int32&gt;
+
+
+        50; EncoderResolution_motorSteps (int32) &lt;Set&gt;&lt;Get&gt;                     the number of steps per turn for the motor
+            -data type &lt;int32&gt;
+        51; EncoderResolution_encResolution (int32) &lt;Set&gt;&lt;Get&gt;                  the actual encoder resolution (pulses per turn)
+            -data type &lt;int32&gt;
+        
+        53; EncoderIndexConfiguration (uint8 bit bit bit bit ) &lt;Set&gt;            Configure the encoder N event context.
+            -data type &lt;uint8&gt;                                                  sensitivity : set to one of ENCODER_N_NO_EDGE, ENCODER_N_RISING_EDGE, ENCODER_N_FALLING_EDGE, ENCODER_N_BOTH_EDGES
+            -data type &lt;bit&gt;                                                    nActiveHigh : choose N signal polarity (true for active high)
+            -data type &lt;bit&gt;                                                    ignorePol : if true, ignore A and B polarities to validate a N event
+            -data type &lt;bit&gt;                                                    aActiveHigh : choose A signal polarity (true for active high) to validate a N event
+            -data type &lt;bit&gt;                                                    bActiveHigh : choose B signal polarity (true for active high) to validate a N event
+            -data type &lt;bit&gt;
+        54; EncoderLatching(uint8) &lt;Set&gt;                                        Enable/disable encoder and position latching on each encoder N event (on each revolution)
+            -data type &lt;uint8&gt;
+        55; isEncoderDeviationDetected(uint8) &lt;Get&gt;                             Check if a deviation between internal pos and encoder has been detected
+            -data type &lt;uint8&gt;
+        56; clearEncoderDeviationFlag() &lt;Set&gt;                                   Clear encoder deviation flag (deviation condition must be handled before)
+            -no data
+        57; EncoderAllowedDeviation (int32) &lt;Set&gt;                               Encoder Allowed Deviation
+            -data type &lt;uint32&gt;
+        58; SW_Mode (uint16) &lt;Set&gt;&lt;Get&gt;                                         Reference Switch &amp; StallGuard2 Event Configuration Register; See the TMC 5160 datasheet page 43
+            -data type &lt;uint16&gt;
+        59; DRV STATUS(uint32) &lt;Get&gt;                                            StallGuard2 Value and Driver Error Flags; datasheet page 56
+            -data type &lt;uint32&gt;
+        60; GetRampStatus(uint16) &lt;Get&gt;&lt;Reset&gt;                                  RAMP_STAT � Ramp &amp; Reference Switch Status Register; datasheet page 44
+            -data type &lt;uint16&gt;
+        61; GetGstat(uint8) &lt;Get&gt;&lt;Reset&gt;                                        Global status flags
+            -data type &lt;uint8&gt;
+
+
+
+        67; SenseResistor(uint16) &lt;Set&gt;&lt;Get&gt;                                    sense Resistor in mOhms 0=automatic
+                -data type &lt;uint16&gt;
+        68; MotorCurrent(uint16) &lt;Set&gt;&lt;Get&gt;                                     Motor Current in mA
+                -data type &lt;uint16&gt;
+        69; MotorCurrentReduction(uint16) &lt;Set&gt;&lt;Get&gt;                            Motor current reduction in mA
+                -data type &lt;uint16&gt;
+        70; Motor Freewheeling Mode(uint8) &lt;Set&gt;&lt;Get&gt;                           Motor freewheeling mode
+                -data type &lt;uint8&gt;
+                    FREEWHEEL_NORMAL   = 0x00,                                  Normal operation
+                    FREEWHEEL_ENABLED  = 0x01,                                  Freewheeling
+                    FREEWHEEL_SHORT_LS = 0x02,                                  Coil shorted using LS drivers
+                    FREEWHEEL_SHORT_HS = 0x03                                   Coil shorted using HS drivers
+        71; Iholddelay(uint8) &lt;Set&gt;&lt;Get&gt;                                        Controls the number of clock cycles for motor power down after a motion as soon as standstill is
+                                                                                detected (stst=1) and TPOWERDOWN has expired.The smooth transition avoids a motor jerk upon power down.
+                    -data type &lt;uint8&gt;
+                        0:                                                      instant power down
+                        1..15:                                                  Delay per current reduction step in multiple    of 2^18 clocks
+        72; PWM_OFS(uint8) &lt;Set&gt;&lt;Get&gt;                                           user defined PWM amplitude offset (0-255) related to full
+                    -data type &lt;uint8&gt;
+                                                                                motor current (CS_ACTUAL=31) in stand still.(Reset default=30)
+        73; PWM_GRAD(uint8) &lt;Set&gt;&lt;Get&gt;                                          Velocity dependent gradient for PWM amplitude: PWM_GRAD * 256 / TSTEP
+                                                                                This value is added to PWM_AMPL to compensate for   the velocity-dependent motor back-EMF.
+                    -data type &lt;uint8&gt;
+        74; StepperDirection(uint8) &lt;Set&gt;&lt;Get&gt;                                  Velocity motor  Stepper Direction
+                    -data type &lt;uint8&gt;
+
+        75; UnLook Motor(uint8) &lt;Set&gt;&lt;Get&gt;                                      Unlock Motor
+            -data type &lt;uint8&gt;  
+                                                            This value is added to PWM_AMPL to compensate for   the velocity-dependent motor back-EMF.
+
+
+        90; Homing Mode(uint8) &lt;Set/Start&gt;&lt;Get&gt;                                 Start homing
+                    -data type &lt;uint8&gt;
+                        1: // endswitsh left
+                        2: // endswitsh right
+        91; Homing timeOut (uint32) &lt;Set&gt;&lt;Get&gt;                                  homing time to fail
+                    -data type &lt;uint32&gt;
+        92; Homing maxPos (uint32) &lt;Set&gt;&lt;Get&gt;                                   maximal deviation Posipion to fail
+                    -data type &lt;uint32&gt;
+        93; Homing rampSpeed (uint32) &lt;Set&gt;&lt;Get&gt;                                rampSpeed for the homing process
+                    -data type &lt;float*1000&gt;
+        94; Homing rampSpeed Register (uint32) &lt;Set&gt;&lt;Get&gt;                       Register rampSpeed for the homing process
+                    -data type &lt;uint32&gt;
+        95; Homing rampSpeed_2(uint32) &lt;Set&gt;&lt;Get&gt;                               rampSpeed phase 2
+                    -data type &lt;float*1000&gt;
+        96; Homing rampSpeed_2 Register (uint32) &lt;Set&gt;&lt;Get&gt;                     Register rampSpeed_2 for the homing process phase 2
+                    -data type &lt;uint32&gt;
+        97; Homing Offset(uint48) &lt;Set&gt;&lt;Get&gt;                                    homing offset(microstep)
+                    -data type &lt;float*1000&gt;
+        98; Homing Offset Register (uint32) &lt;Set&gt;&lt;Get&gt;                          Register homing offset(microstep)
+                    -data type &lt;uint32&gt;
+        99; Homing rampSpeedStart(uint32) &lt;Set&gt;&lt;Get&gt;                            homing ramp speed start
+                    -data type &lt;double*1000&gt;
+        100; Homing rampSpeedStart Register (uint32) &lt;Set&gt;&lt;Get&gt;                 Register rampSpeedStart()
+                    -data type &lt;uint32&gt;
+        101; Homing rampSpeedStop(uint32) &lt;Set&gt;&lt;Get&gt;                            homing ramp speed stop
+                    -data type &lt;float*1000&gt;
+        102; Homing rampSpeedStop Register (uint32) &lt;Set&gt;&lt;Get&gt;                  Register rampSpeedStop()
+                    -data type &lt;uint32&gt;
+        103; Homing rampSpeedHold(uint32) &lt;Set&gt;&lt;Get&gt;                            homing ramp speed hold
+                    -data type &lt;float*1000&gt;
+        104; Homing rampSpeedHold Register (uint32) &lt;Set&gt;&lt;Get&gt;                  Register rampSpeedHold()
+                    -data type &lt;uint32&gt;
+        105; Homing accelerationsAmax(uint32) &lt;Set&gt;&lt;Get&gt;                        homing accelerations Amax
+                    -data type &lt;float*1000&gt;
+        106; Homing accelerationsAmax Register (uint32) &lt;Set&gt;&lt;Get&gt;              Register accelerationsAmax()
+                    -data type &lt;uint32&gt;
+        107; Homing accelerationsDmax(uint32) &lt;Set&gt;&lt;Get&gt;                        homing accelerations Dmax
+                    -data type &lt;float*1000&gt;
+        108; Homing accelerationsDmax Register (uint32) &lt;Set&gt;&lt;Get&gt;              Register accelerationsDmax()
+                    -data type &lt;uint32&gt;
+        109 ;Homing accelerationsA1(uint32) &lt;Set&gt;&lt;Get&gt;                          homing accelerations A1
+                    -data type &lt;float*1000&gt;
+        110; Homing accelerationsA1 Register (uint32) &lt;Set&gt;&lt;Get&gt;                Register accelerationsA1()
+                    -data type &lt;uint32&gt;
+        111;Homing accelerationsD1(uint32) &lt;Set&gt;&lt;Get&gt;                           homing accelerations D1
+                    -data type &lt;float*1000&gt;
+        112; Homing accelerationsD1 Register (uint32) &lt;Set&gt;&lt;Get&gt;                Register accelerationsD1()
+                    -data type &lt;uint32&gt;
+                                    
+
+        128;Startup  drvStrength(uint32) &lt;Set&gt;&lt;Get&gt;                             Startup Selection of gate driver current. Adapts the gate driver current to the gate charge of the external MOSFETs.
+            -data type &lt;uint8&gt;
+                00: weak
+                01: weak+TC (medium above OTPW level)
+                10: medium
+                11: strong
+                    
+        129;Startup  bbmClks(uint32) &lt;Set&gt;&lt;Get&gt;                                 Startup 0..15: Digital BBM time in clock cycles (typ. 83ns).The longer setting rules (BBMTIME vs. BBMCLKS).
+                -data type &lt;uint16&gt;
+                    (Reset Default: OTP 4 or 2)
+        130;Startup  bbmTime(uint32) &lt;Set&gt;&lt;Get&gt;                                 Startup Break-Before make delay
+            -data type &lt;uint8&gt;
+                0=shortest (100ns) � 16 (200ns) � 24=longest (375ns)
+                &gt;24 not recommended, use BBMCLKS instead
+        131;Startup  Iholddelay(uint8) &lt;Set&gt;&lt;Get&gt;                               Startup Iholddelay
+                    -data type &lt;uint8&gt;
+        132;Startup  SenseResistor(uint16) &lt;Set&gt;&lt;Get&gt;                           Startup sense resistor in mOhms 0=automatic
+                -data type &lt;uint16&gt;
+        133;Startup  MotorCurrent(uint16) &lt;Set&gt;&lt;Get&gt;                            Startup motor current in mA
+                -data type &lt;uint16&gt;
+        134;Startup  MotorCurrentReduction(uint16) &lt;Set&gt;&lt;Get&gt;                   Startup motor current reduction in mA
+                -data type &lt;uint16&gt;
+        135;Startup  Motor Freewheeling Mode(uint8) &lt;Set&gt;&lt;Get&gt;                  Startup motor freewheeling mode
+                -data type &lt;uint8&gt;
+        136;Startup  PWM_OFS(uint8) &lt;Set&gt;&lt;Get&gt;                                  Startup user defined PWM amplitude offset (0-255) related to full
+                    -data type &lt;uint8&gt;
+        137;Startup  PWM_GRAD(uint8) &lt;Set&gt;&lt;Get&gt;                                 Startup Velocity dependent gradient for PWM amplitude: PWM_GRAD * 256 / TSTEP
+                    -data type &lt;uint8&gt;
+        138;Startup  StepperDirection(uint8) &lt;Set&gt;&lt;Get&gt;                         Startup Velocity motor  Stepper Directio
+                    -data type &lt;uint8&gt;
+        139;Startup  MaxSpeed (uint32) &lt;Set&gt;&lt;Get&gt;                               Startup the max speed VMAX
+            -data type &lt;float*1000&gt;
+        140;Startup  MaxSpeed Register (uint32) &lt;Set&gt;&lt;Get&gt;                      Register Startup  MaxSpeed
+                    -data type &lt;uint32&gt;
+        141;Startup  StartRampSpeed(uint32) &lt;Set&gt;&lt;Get&gt;                          Startup the start ramp speed
+            -data type &lt;float*1000&gt;
+        142;Startup  StartRampSpeed Register (uint32) &lt;Set&gt;&lt;Get&gt;                Register Startup  start ramp speed
+                    -data type &lt;uint32&gt;
+        143;Startup  StopRampSpeed(uint32) &lt;Set&gt;&lt;Get&gt;                           Startup the stop ramp speed
+            -data type &lt;float*1000&gt;
+        144;Startup  StopRampSpeed Register (uint32) &lt;Set&gt;&lt;Get&gt;                 Register Startup  stop ramp speed
+                    -data type &lt;uint32&gt;
+        145;Startup  HoldRampSpeed(uint32) &lt;Set&gt;&lt;Get&gt;                           Startup the hold ramp speed
+            -data type &lt;float*1000&gt;
+        146;Startup  HoldRampSpeed Register (uint32) &lt;Set&gt;&lt;Get&gt;                 Register Startup  hold ramp speed
+                -data type &lt;uint32&gt;
+        147;Startup  Acceleration maxAccel(uint32) &lt;Set&gt;&lt;Get&gt;                   Startup ramp accelerations AMAX
+            -data type &lt;float*1000&gt;
+        148;Startup  Acceleration maxAccel Register (uint32) &lt;Set&gt;&lt;Get&gt;         Register Startup  Acceleration maxAccel
+                -data type &lt;uint32&gt;
+        149;Startup  Acceleration maxDecel(uint32) &lt;Set&gt;&lt;Get&gt;                   Startup ramp accelerations DMAX
+            -data type &lt;float*1000&gt;
+        150;Startup  Acceleration maxDecel Register (uint32) &lt;Set&gt;&lt;Get&gt;         Register Startup  Acceleration maxDecel
+                -data type &lt;uint32&gt;
+        151;Startup  Acceleration startAccel(uint32) &lt;Set&gt;&lt;Get&gt;                 Startup ramp accelerations A1
+            -data type &lt;uifloat*1000nt32&gt;
+        152;Startup  Acceleration startAccel Register (uint32) &lt;Set&gt;&lt;Get&gt;       Register Startup  Acceleration startAccel
+                -data type &lt;uint32&gt;
+        153;Startup  Acceleration stopAccel(uint32) &lt;Set&gt;&lt;Get&gt;                  Startup ramp accelerations D1
+            -data type &lt;float*1000&gt;
+        154;Startup  Acceleration stopAccel Register (uint32) &lt;Set&gt;&lt;Get&gt;        Register Startup  Acceleration stopAccel
+                -data type &lt;uint32&gt;
+        155;Startup  ModeChangeSpeeds pwmThrs(uint32) &lt;Set&gt;&lt;Get&gt;                Startup mode change speeds pwmThrs
+            -data type &lt;float*1000&gt;
+        156;Startup  ModeChangeSpeeds pwmThrs Register (uint32) &lt;Set&gt;&lt;Get&gt;      Register Startup  ModeChangeSpeeds pwmThrs
+                -data type &lt;uint32&gt;
+        157;Startup  ModeChangeSpeeds coolThrs(uint32) &lt;Set&gt;&lt;Get&gt;               Startup mode change speeds coolThrs
+            -data type &lt;float*1000&gt;
+        158;Startup  ModeChangeSpeeds coolThrs Register (uint32) &lt;Set&gt;&lt;Get&gt;     Register Startup  ModeChangeSpeeds coolThrs
+                -data type &lt;uint32&gt;
+        159;Startup  ModeChangeSpeeds highThrs(uint32) &lt;Set&gt;&lt;Get&gt;               Startup mode change speeds highThrs
+            -data type &lt;float*1000&gt;
+        160;Startup  ModeChangeSpeeds highThrs Register (uint32) &lt;Set&gt;&lt;Get&gt;     Register Startup  ModeChangeSpeeds highThrs
+                -data type &lt;uint32&gt;
+        161;Startup  EncoderResolution_motorSteps (int32) &lt;Set&gt;&lt;Get&gt;        Startup the number of steps per turn for the motor
+            -data type &lt;int32&gt;
+        162;Startup  EncoderResolution_encResolution (int32) &lt;Set&gt;&lt;Get&gt;     Startup the actual encoder resolution (pulses per turn)
+            -data type &lt;int32&gt;
+        
+        164;Startup  EncoderIndexConfiguration (uint8 bit bit bit bit ) &lt;Set&gt;&lt;Get&gt;      Startup Configure the encoder N event context.
+            -data type &lt;uint8&gt;                                                  sensitivity : set to one of ENCODER_N_NO_EDGE, ENCODER_N_RISING_EDGE, ENCODER_N_FALLING_EDGE, ENCODER_N_BOTH_EDGES
+            -data type &lt;bit&gt;                                                    nActiveHigh : choose N signal polarity (true for active high)
+            -data type &lt;bit&gt;                                                    ignorePol : if true, ignore A and B polarities to validate a N event
+            -data type &lt;bit&gt;                                                    aActiveHigh : choose A signal polarity (true for active high) to validate a N event
+            -data type &lt;bit&gt;                                                    bActiveHigh : choose B signal polarity (true for active high) to validate a N event
+            -data type &lt;bit&gt;                                                    Startup Enable/disable encoder and position latching on each encoder N event (on each revolution)
+        
+        166;Startup  EncoderAllowedDeviation (int32) &lt;Set&gt;&lt;Get&gt;             Startup Encoder Allowed Deviation
+            -data type &lt;uint32&gt;
+        167;Startup  SW_Mode (uint16) &lt;Set&gt;&lt;Get&gt;                            Startup Reference Switch &amp; StallGuard2 Event Configuration Register; See the TMC 5160 datasheet page 43
+            -data type &lt;uint16&gt;
+        168;Startup  RampMode (uint8) &lt;Set&gt;&lt;Get&gt;                            Startup  RampMode
+            -data type &lt;uint8&gt;
+                0:                                                          Positioning mode (using all A, D and V parameters)
+                1:                                                          Velocity mode to positive VMAX (using AMAX acceleration)
+                2:                                                          Velocity mode to negative VMAX (using AMAX acceleration)
+                3:                                                          Hold mode (velocity remains unchanged,unless stop event occurs)
+            &quot;HomingMode&quot;,&quot;HomingOffset&quot;,&quot;HomingMaxPos&quot;,&quot;HomingTimeout&quot;,&quot;HomingSpeed_2&quot;,&quot;HomingDmax&quot;
+        169;Startup  Homing Mode(uint8) &lt;Set&gt;&lt;Get&gt;                          Startup homing mode
+                    -data type &lt;uint8&gt;
+        170;Startup  Homing Offset(int48) &lt;Set&gt;&lt;Get&gt;                        Startup homing offset(microstep)
+                    -data type &lt;double*1000&gt;
+        171;Startup  Homing Offset Register (int32) &lt;Set&gt;&lt;Get&gt;              Register Startup    homing offset(microstep)
+                    -data type &lt;int32&gt;
+        172;Startup  Homing timeOut (uint32) &lt;Set&gt;&lt;Get&gt;                     Startup homing time to fail
+                    -data type &lt;uint32&gt;
+        173;Startup  Homing maxPos (int32) &lt;Set&gt;&lt;Get&gt;                       Startup homing maximal deviation Posipion to fail
+                    -data type &lt;int32&gt;
+        174;Startup  Homing rampSpeed_2(uint32) &lt;Set&gt;&lt;Get&gt;                  Startup homing rampSpeed phase 2
+                    -data type &lt;float*1000&gt;
+        175;Startup  Homing rampSpeed_2 Register (int32) &lt;Set&gt;&lt;Get&gt;         Register homing Startup rampSpeed_2
+                    -data type &lt;int32&gt;
+        176;Startup  Homing accelerationsDmax(uint32) &lt;Set&gt;&lt;Get&gt;            Startup homing accelerations Dmax
+                    -data type &lt;float*1000&gt;
+        175;Startup  Homing accelerationsDmax Register (int32) &lt;Set&gt;&lt;Get&gt;   Register homing Startup accelerationsDmax
+                    -data type &lt;int32&gt;
+
+        512..768    Maping Motor Register
+                    -data type &lt;int32/uint32&gt;
+
+
+
+
+        - subCommand of userFunction 
+            1; start user function(uint8)  &lt;Set&gt;&lt;Get&gt;                           Start userFunction whith sub user function data
+                -data type &lt;uint8&gt;
+            2; stop user function
+           30; userFunctionVariable1(uint32)  &lt;Set&gt;&lt;Get&gt;                        Set/Get userFunction variable 1
+           31; userFunctionVariable2(uint32)  &lt;Set&gt;&lt;Get&gt;                        Set/Get userFunction variable 2
+           32; userFunctionVariable3(uint32)  &lt;Set&gt;&lt;Get&gt;                        Set/Get userFunction variable 3
+           33; userFunctionVariable4(uint32)  &lt;Set&gt;&lt;Get&gt;                        Set/Get userFunction variable 4
+           34; userFunctionVariable5(uint32)  &lt;Set&gt;&lt;Get&gt;                        Set/Get userFunction variable 5
+           35; userFunctionVariable6(uint32)  &lt;Set&gt;&lt;Get&gt;                        Set/Get userFunction variable 6
+           40; userFunction Variable1 float(uint48)(uint48/1000= double )  &lt;Set&gt;&lt;Get&gt;                   Set/Get userFunction float variable 1
+           41; userFunction Variable2 float(uint48)(uint48/1000= double )  &lt;Set&gt;&lt;Get&gt;                   Set/Get userFunction float variable 2
+           42; userFunction Variable3 float(uint48)(uint48/1000= double )  &lt;Set&gt;&lt;Get&gt;                   Set/Get userFunction float variable 3
+           43; userFunction Variable4 float(uint48)(uint48/1000= double )  &lt;Set&gt;&lt;Get&gt;                   Set/Get userFunction float variable 4
+
+           50; Startup  start user function(uint8)  &lt;Set&gt;&lt;Get&gt;                  Startup userFunction whith sub user function data
+
+           60; Startup userFunction Variable1(uint32)  &lt;Set&gt;&lt;Get&gt;               Startup Set/Get userFunction variable 1
+           61; Startup userFunction Variable2(uint32)  &lt;Set&gt;&lt;Get&gt;               Startup Set/Get userFunction variable 2
+           62; Startup userFunction Variable3(uint32)  &lt;Set&gt;&lt;Get&gt;               Startup Set/Get userFunction variable 3
+           63; Startup userFunction Variable4(uint32)  &lt;Set&gt;&lt;Get&gt;               Startup Set/Get userFunction variable 4
+           64; Startup userFunction Variable5(uint32)  &lt;Set&gt;&lt;Get&gt;               Startup Set/Get userFunction variable 5
+           65; Startup userFunction Variable6(uint32)  &lt;Set&gt;&lt;Get&gt;               Startup Set/Get userFunction variable 6
+           70; Startup userFunction Variable1 float(uint48)(uint48/1000= double )  &lt;Set&gt;&lt;Get&gt;           Startup Set/Get userFunction float variable 1
+           71; Startup userFunction Variable2 float(uint48)(uint48/1000= double )  &lt;Set&gt;&lt;Get&gt;           Startup Set/Get userFunction float variable 2
+           72; Startup userFunction Variable3 float(uint48)(uint48/1000= double )  &lt;Set&gt;&lt;Get&gt;           Startup Set/Get userFunction float variable 3
+           73; Startup userFunction Variable4 float(uint48)(uint48/1000= double )  &lt;Set&gt;&lt;Get&gt;           Startup Set/Get userFunction float variable 4
+
+
+
+
+
+
+
+
+
+        - subCommand of input                                           &lt;Input1..6 and laser1..2 &gt;
+            1 inputFaling(uint32)   &lt;Set&gt;&lt;Get&gt;                                  Input Faling INPUT_RUN_USERFUNCTION
+                -data type &lt;uint32&gt;
+            2 inputRising(uint32)   &lt;Set&gt;&lt;Get&gt;                                  Input Rising INPUT_RUN_USERFUNCTION
+                -data type &lt;uint32&gt;
+            3 Startup inputFaling(uint32)   &lt;Set&gt;&lt;Get&gt;                          Startup Input Faling INPUT_RUN_USERFUNCTION
+                -data type &lt;uint32&gt;
+            4 Startup inputRising(uint32)   &lt;Set&gt;&lt;Get&gt;                          Startup Input Rising INPUT_RUN_USERFUNCTION
+                -data type &lt;uint32&gt;
+
+            5 GetInputState &lt;uint8&gt;&lt;Get&gt;                                        Get the state of input
+                -data type &lt;uint8&gt;
+
+
+
+            descipion of INPUT_RUN_USERFUNCTION:
+                                                                all fuctions can cominate 
+            INPUT_RUN_USERFUNCTION_START_1                      0x0001xx    ; Start userfunction 1 whit sub function xx
+            INPUT_RUN_USERFUNCTION_START_2                      0x000200    ; Start userfunction 2 whit sub function xx
+            INPUT_RUN_USERFUNCTION_START_3                      0x000400    ; Start userfunction 3 whit sub function xx
+            INPUT_RUN_USERFUNCTION_START_4                      0x000800    ; Start userfunction 4 whit sub function xx
+            INPUT_RUN_USERFUNCTION_START_5                      0x001000    ; Start userfunction 4 whit sub function xx
+            INPUT_RUN_USERFUNCTION_START_6                      0x002000    ; Start userfunction 4 whit sub function xx
+
+            INPUT_RUN_USERFUNCTION_STOP_1                       0x010100    ; Stop userfunction 1
+            INPUT_RUN_USERFUNCTION_STOP_2                       0x010200    ; Stop userfunction 2
+            INPUT_RUN_USERFUNCTION_STOP_3                       0x010400    ; Stop userfunction 3
+            INPUT_RUN_USERFUNCTION_STOP_4                       0x010800    ; Stop userfunction 4
+            INPUT_RUN_USERFUNCTION_STOP_5                       0x011000    ; Stop userfunction 5
+            INPUT_RUN_USERFUNCTION_STOP_6                       0x012000    ; Stop userfunction 6
+
+            INPUT_RUN_MOTOR_STOP_1                              0x020100    ; Motor Stop 1
+            INPUT_RUN_MOTOR_STOP_2                              0x020200    ; Motor Stop 2
+            INPUT_RUN_MOTOR_STOP_3                              0x020200    ; Motor Stop 3
+            INPUT_RUN_MOTOR_STOP_4                              0x020400    ; Motor Stop 4
+
+            INPUT_RUN_MOTOR_EMERGENCYSTOP_1                     0x022100    ; EMERGENCYSTOP Motor  1
+            INPUT_RUN_MOTOR_EMERGENCYSTOP_2                     0x022200    ; EMERGENCYSTOP Motor  1
+            INPUT_RUN_MOTOR_EMERGENCYSTOP_3                     0x022400    ; EMERGENCYSTOP Motor  1
+            INPUT_RUN_MOTOR_EMERGENCYSTOP_4                     0x022800    ; EMERGENCYSTOP Motor  1</code></pre>
 </div>
-<div id="monsterrhino-installation-guide" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Monsterrhino installation guide</h1>
+<div id="monsterrhino-motion-library-installation-guide" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Monsterrhino Motion library installation guide</h1>
 <div id="install-java-runtime-environment" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Install Java Runtime Environment</h2>
 <div id="for-windows" class="section level3" number="4.1.1">
@@ -612,6 +1055,10 @@ h or hold</p>
 <li><p>you can now use the ViewPortMonitor to connect to your Monsterrhino and directly send commands</p></li>
 <li><p>to use Visual Studio to compile and upload your code to your Monsterrhino, you first have to restart it in debug mode (keep debug button pushed while pressing the reset button)</p></li>
 </ul>
+</div>
+<div id="prepare-your-raspberry-pi-4-for-using-with-monsterrhino-control" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Prepare your Raspberry Pi 4 for using with Monsterrhino Control</h1>
+<p>Download Raspberry Pi Desktop from <a href="https://www.raspberrypi.org/software/raspberry-pi-desktop/" class="uri">https://www.raspberrypi.org/software/raspberry-pi-desktop/</a>. Make sure you have a version that is supported by the touch display driver (<a href="https://4dsystems.com.au/gen4-4dpi-50ct-clb" class="uri">https://4dsystems.com.au/gen4-4dpi-50ct-clb</a>). Use a program of your choice (e.g. BalenaEtcher) to burn the Raspberry Pi Destop image to a SD card.</p>
 </div>
 
 
