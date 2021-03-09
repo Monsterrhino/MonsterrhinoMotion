@@ -7,13 +7,103 @@ output:
     fig_caption: true
 ---
 
-# Get started
+# Introduction
+The Monsterrhino Motion card is an independent stepper motor driver card to power and control up to 4 stepper motors that comes with a pre-installed firmware.
+You can use Monsterrhino Motion in different ways depending on the complexity of your project: 
 
-![](Documentation/Images/Motion_Illustrated.png){width=50%}
+- Use the pre-installed firmware by sending commands **over a serial USB port** using a variety of predefined functions
+- Use the pre-installed firmware by sending commands **over CAN bus** using a variety of predefined functions
+- Program functions and actions with the **provided Arduino library** and upload directly to the card
+
+In the simplest case you can just connect 24V, a stepper motor and a USB cable to the Monsterrhino Motion and you are ready to move the motor.
+
+The key features of the stepper driver card are:
+
+- up to 4 stepper motors
+- two limit switches per motor
+- encoder for each stepper motor
+- up 12 digital inputs (24V)
+- 1 digital output (24V)
+- 3 PWM outputs (open collector)
+- 2 CAN bus connector 
+- USB C connector
+- micro USB connector
+- analog emergency power-off circuit that can be bridged with a jumper
+
 
 ![](Documentation/Images/Monsterrhino_Motion_Datasheet.png)
 
-# Monsterrhino installation guide
+
+# USB serial communication
+
+## Connect to Monsterrhino Motion
+
+Install the Arduino IDE on your computer (https://www.arduino.cc/en/software). Open the Arduino IDE on your computer. Select the right port under **Tools->Port** e.g. /dev/ttyACM0 or COM5. Open the serial monitor by clicking on the magnifying glass symbol. Set **115200 baud** and line ending to **Both NL & CR**. Press the reset button on the Monsterrhino Motion than your ready to type your first command. If you have Motor 1 connected you can for example type: **m1mr 100** into the serial monitor and hit enter - now Motor 1 should move 100 steps. The meaning of this command is: **m1** - motor 1, **mr** move relative, **100** - hundred steps. With **m1mr -100** you can move 100 steps into the other direction. 
+
+
+## Commands
+The bold commands can be combined with the commands from the list below e.g.:
+
+- **m1tp 100** - motor 1 move to target position 100
+- **m4ma 200** - motor 4 set motor current to 200 mA
+- **m3smp** - motor 3 save motor parameters
+- **m2cp ?** - request motor 2 current position
+
+The questionmark can generally be used to request parameters.
+
+Motor |**m**    |**motor**
+---         | :-:     | :-:
+TargetPosition |tp|targetpos
+CurrentPosition|cp|currentpos
+Mode|mo|mode
+MaxSpeed|ms|maxspeed
+CurrentSpeed|cs|currentspeed
+Register|r|register
+RampSpeeds|rs|rampspeeds
+Acceleration|ac|acceleration
+Accelerations|as|accelerations
+Stop|s|stop
+Enable|en|enable
+Disable|di|disable
+EncoderPosition|ep|encoderposition 
+LatchedPosition|lp|latchedposition
+LatchedEncoderPosition|le|latchedencoder
+MotorDriveStatus|mds|motordrvstatus
+MotorRampStat|mrs|motorrampstat
+gStat|gs|gstat
+MotorCurrent|ma|currentma
+Freewheelingmode|fwm| freewheelingmode
+ModeChangeSpeeds|mcs| modechangespeeds
+Switch Mode|swm|swmode
+Save|sv|save
+SaveMotorParameter|smp|savemotorparameter
+Test|test
+Load|ld|load
+Startup|st|startup 
+
+**Input**|i|input
+---         | :-:     | :-:
+InputFunction|if|inputfunction
+StartUp|st|startup
+
+**Functions**|f|function
+---         | :-:     | :-:
+Start|s|start
+Stop|t|stop
+Variable|v|variable
+Float|f|float
+Startup|st|startup
+Unlock|u|unlook
+
+Mode|mo|mode ->
+	? (get) 
+	p or positioning 
+	v or velocity
+	h or hold
+
+# CAN bus communication
+
+# Monsterrhino installation guide 
 
 ## Install Java Runtime Environment
 
@@ -100,61 +190,4 @@ output:
 * to use Visual Studio to compile and upload your code to your Monsterrhino, you first have to restart it in debug mode (keep debug button pushed while pressing the reset button)
 
 
-
-
-# Other
-## Commands
-
-Description |shortcut1|shortcut2
-------------|---------|--------
-Motor       |**m**    |**motor**
-Input       |**i**    |**input**
-Function    |**f**    |**function**
-
-
-Description |shortcut1|shortcut2
-------------|---------|--------
-TargetPosition |tp|targetpos
-CurrentPosition|cp|currentpos
-Mode|mo|mode
-MaxSpeed|ms|maxspeed
-CurrentSpeed|cs|currentspeed
-Register|r|register
-RampSpeeds|rs|rampspeeds
-Acceleration|ac|acceleration
-Accelerations|as|accelerations
-Stop|s|stop
-Enable|en|enable
-Disable|di|disable
-EncoderPosition|ep|encoderposition 
-LatchedPosition|lp|latchedposition
-LatchedEncoderPosition|le|latchedencoder
-MotorDriveStatus|mds|motordrvstatus
-MotorRampStat|mrs|motorrampstat
-gStat|gs|gstat
-MotorCurrent|ma|currentma
-Freewheelingmode|fwm| freewheelingmode
-ModeChangeSpeeds|mcs| modechangespeeds
-Switch Mode|swm|swmode
-Save|sv|save
-SaveMotorParameter|smp|savemotorparameter
-Test|test
-Load|ld|load
-Startup|st|startup
-**Input**|i|input
-InputFunction|if|inputfunction
-StartUp|st|startup
-**Functions**|f|function:
-Start|s|start
-Stop|t|stop
-Variable|v|variable
-Float|f|float
-Startup|st|startup
-Unlock|u|unlook
-
-Mode|mo|mode ->
-	? (get) 
-	p or positioning 
-	v or velocity
-	h or hold
 
