@@ -7,9 +7,17 @@ output:
     fig_caption: true
 ---
 
-![](Images/Monsterrhino_Images/Logo.png){width=20%}
+<!-- ![](Images/Monsterrhino_Images/logo.png){width=20%}  -->
 
-![](Images/Motion_illustrated.png){width=50%}
+<p align="center">
+  <img width="100" src="Images/Monsterrhino_Images/logo.png">
+</p>
+
+<p align="center">
+  <img width="500" src="Images/Motion_Illustrated.png">
+</p>
+
+
 
 # General
 **Monsterrhino Motion** is an independent stepper motor controller.  

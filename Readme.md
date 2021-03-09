@@ -9,7 +9,7 @@ output:
 
 # Get started
 
-![](Documentation/Images/Motion_illustrated.png){width=50%}
+![](Documentation/Images/Motion_Illustrated.png){width=50%}
 
 ![](Documentation/Images/Monsterrhino_Motion_Datasheet.png)
 
@@ -158,35 +158,3 @@ Mode|mo|mode ->
 	v or velocity
 	h or hold
 
-## Questions:
-* pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR4PosReached); ??
-* How to wait for motor move to finish? while (g_Motor1.getCurrentPosition() != pos); Better way?
-* Homing with serial command?
-* What is latched ?
-* Look or Lock ?
-* Possible to see if endswitch is activated
-* How to use Homing function?
-* Hoe to call userfunction from other userfunction?
-
-## Change on hardware:
-* Emergeny poweroff off motors with Raspberry Pin and with Emergeny Poweroff button
-* 3.3 V instead of 5 V on the limit switch supply
-* LED for endswitch if possible
-* LED power indicator on both boards
-* Boot mode switch instead of jumper (next to each other)
-* Rename sensors to inputs (and RGB as analog out) and outputs abc or 123...
-* Make solder mask black with Monsterrhino logo
-* TxRx indicator LED for CAN (maybe both)
-* Motor board label CAN in and CAN out (or is it commutable)
-* Add 10k pullup on RESET pin of MCP2515 CAN chip
-* Connect **CS Pin** of MCP2515 to **SPI_CE1_N** instead of **SPI_CE0_N** because 0 is used by the display, or make a switch to choose between them
-
-## To do firmware:
-* Start all motor and sensor names with 0
-* Use CAN address switch for selecting relevant part of firmware
-* Implement CAN Bus
-* Implement LOCK and FAN input/outputs
-* Encoder implementation
-* Force sensing implementation
-* "Run smooth" function implementation
-* Read value sense resistor
