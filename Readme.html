@@ -862,12 +862,8 @@ Implementation protocol V2:
                     -data type &lt;float*1000&gt;
         175;Startup  Homing accelerationsDmax Register (int32) &lt;Set&gt;&lt;Get&gt;   Register homing Startup accelerationsDmax
                     -data type &lt;int32&gt;
-
         512..768    Maping Motor Register
                     -data type &lt;int32/uint32&gt;
-
-
-
 
         - subCommand of userFunction 
             1; start user function(uint8)  &lt;Set&gt;&lt;Get&gt;                           Start userFunction whith sub user function data
@@ -897,14 +893,6 @@ Implementation protocol V2:
            72; Startup userFunction Variable3 float(uint48)(uint48/1000= double )  &lt;Set&gt;&lt;Get&gt;           Startup Set/Get userFunction float variable 3
            73; Startup userFunction Variable4 float(uint48)(uint48/1000= double )  &lt;Set&gt;&lt;Get&gt;           Startup Set/Get userFunction float variable 4
 
-
-
-
-
-
-
-
-
         - subCommand of input                                           &lt;Input1..6 and laser1..2 &gt;
             1 inputFaling(uint32)   &lt;Set&gt;&lt;Get&gt;                                  Input Faling INPUT_RUN_USERFUNCTION
                 -data type &lt;uint32&gt;
@@ -918,10 +906,8 @@ Implementation protocol V2:
             5 GetInputState &lt;uint8&gt;&lt;Get&gt;                                        Get the state of input
                 -data type &lt;uint8&gt;
 
-
-
             descipion of INPUT_RUN_USERFUNCTION:
-                                                                all fuctions can cominate 
+            all fuctions can cominate 
             INPUT_RUN_USERFUNCTION_START_1                      0x0001xx    ; Start userfunction 1 whit sub function xx
             INPUT_RUN_USERFUNCTION_START_2                      0x000200    ; Start userfunction 2 whit sub function xx
             INPUT_RUN_USERFUNCTION_START_3                      0x000400    ; Start userfunction 3 whit sub function xx
@@ -1055,10 +1041,6 @@ Implementation protocol V2:
 <li><p>you can now use the ViewPortMonitor to connect to your Monsterrhino and directly send commands</p></li>
 <li><p>to use Visual Studio to compile and upload your code to your Monsterrhino, you first have to restart it in debug mode (keep debug button pushed while pressing the reset button)</p></li>
 </ul>
-</div>
-<div id="prepare-your-raspberry-pi-4-for-using-with-monsterrhino-control" class="section level1" number="6">
-<h1><span class="header-section-number">6</span> Prepare your Raspberry Pi 4 for using with Monsterrhino Control</h1>
-<p>Download Raspberry Pi Desktop from <a href="https://www.raspberrypi.org/software/raspberry-pi-desktop/" class="uri">https://www.raspberrypi.org/software/raspberry-pi-desktop/</a>. Make sure you have a version that is supported by the touch display driver (<a href="https://4dsystems.com.au/gen4-4dpi-50ct-clb" class="uri">https://4dsystems.com.au/gen4-4dpi-50ct-clb</a>). Use a program of your choice (e.g. BalenaEtcher) to burn the Raspberry Pi Destop image to a SD card.</p>
 </div>
 
 

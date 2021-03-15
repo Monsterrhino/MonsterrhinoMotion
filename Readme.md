@@ -463,12 +463,8 @@ Commands can also be send over the CAN bus, therefore it is necessary to set the
 						-data type <float*1000>
 			175;Startup  Homing accelerationsDmax Register (int32) <Set><Get>	Register homing Startup	accelerationsDmax
 						-data type <int32>
-
 			512..768	Maping Motor Register
 						-data type <int32/uint32>
-
-
-
 
 			- subCommand of userFunction 
 				1; start user function(uint8)  <Set><Get>							Start userFunction whith sub user function data
@@ -498,14 +494,6 @@ Commands can also be send over the CAN bus, therefore it is necessary to set the
 			   72; Startup userFunction Variable3 float(uint48)(uint48/1000= double )  <Set><Get>			Startup	Set/Get userFunction float variable 3
 			   73; Startup userFunction Variable4 float(uint48)(uint48/1000= double )  <Set><Get>			Startup	Set/Get userFunction float variable 4
 
-		 
-
-
-
-
-
-
-
 			- subCommand of input											<Input1..6 and laser1..2 >
 				1 inputFaling(uint32)	<Set><Get>									Input Faling INPUT_RUN_USERFUNCTION
 					-data type <uint32>
@@ -519,10 +507,8 @@ Commands can also be send over the CAN bus, therefore it is necessary to set the
 				5 GetInputState <uint8><Get>										Get the state of input
 					-data type <uint8>
 
-
-
 				descipion of INPUT_RUN_USERFUNCTION:
-																	all fuctions can cominate 
+				all fuctions can cominate 
 				INPUT_RUN_USERFUNCTION_START_1						0x0001xx	; Start userfunction 1 whit sub function xx
 				INPUT_RUN_USERFUNCTION_START_2						0x000200	; Start userfunction 2 whit sub function xx
 				INPUT_RUN_USERFUNCTION_START_3						0x000400	; Start userfunction 3 whit sub function xx
@@ -633,7 +619,5 @@ Commands can also be send over the CAN bus, therefore it is necessary to set the
 * you can now use the ViewPortMonitor to connect to your Monsterrhino and directly send commands 
 * to use Visual Studio to compile and upload your code to your Monsterrhino, you first have to restart it in debug mode (keep debug button pushed while pressing the reset button)
 
-# Prepare your Raspberry Pi 4 for using with Monsterrhino Control 
 
-Download Raspberry Pi Desktop from https://www.raspberrypi.org/software/raspberry-pi-desktop/. Make sure you have a version that is supported by the touch display driver (https://4dsystems.com.au/gen4-4dpi-50ct-clb). Use a program of your choice (e.g. BalenaEtcher) to burn the Raspberry Pi Destop image to a SD card.
 
