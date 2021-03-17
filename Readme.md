@@ -31,7 +31,7 @@ The key features of the MonsterrhinoMotion stepper driver card are:
 
 ## USB serial communication
 
-## Connect to Monsterrhino Motion
+### Connect to Monsterrhino Motion
 
 Install the Arduino IDE on your computer (https://www.arduino.cc/en/software). Open the Arduino IDE on your computer. 
 
@@ -46,7 +46,7 @@ Install the Arduino IDE on your computer (https://www.arduino.cc/en/software). O
 Press the reset button on the Monsterrhino Motion than your ready to type your first command. If you have Motor 1 connected you can for example type: **m1mr 100** into the serial monitor and hit enter - now Motor 1 should move 100 steps. The meaning of this command is: **m1** - motor 1, **mr** move relative, **100** - hundred steps. With **m1mr -100** you can move 100 steps into the other direction. 
 
 
-## Commands
+### Commands
 The MonsterrhinoMotion commands are combinations of commands from the list below. They are composed of the classifier: **m, i or f**. A number after the classifier letter selects the desired motor, input, or function: Motor 1 = **m1**, Userfunction 1 = **f1**. The classifier is followed by a function such as targetposition = **tp** and a number.
 
 - **m1tp 100** - motor 1 move to target position 100
@@ -107,6 +107,8 @@ Unlock|u|unlook
 To use the the Monsterrhino Motion library it is necessary to install following packages first:
 
 ## On Windows
+Tested on Windows 10.
+
 ### Install Java Runtime Environment
 If not already satisfied:
 
@@ -206,7 +208,25 @@ The setup of Arduino IDE shown before has to be completed prior to setting up Vi
 * To use Visual Studio to compile and upload your code to your Monsterrhino, you first have to restart it in debug mode (keep debug button pushed while pressing the reset button)
 
 
-## For Ubuntu
-* install the Java Runtime Environment by executing the following command in your terminal: ```sudo apt install openjdk-8-jre```
- 
-* using Ubuntu the **STM32CubeProgrammer** can be installed by executing the install script from a terminal - *cd* to the location of the file, then run it: ```./SetupSTM32CubeProgrammer-2.5.0.linux```
+## On Ubuntu 
+Tested on Ubuntu 20.04. 
+
+* Install the Arduino IDE (tested with version 1.8.12)
+* In the Arduino IDE go to **Properties/Additional BoardsManager** and add following 
+
+  ```https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json ```
+  
+* Under **Arduino/Boardsmanager** add ```stm32 cores```.
+* Install the Java Runtime Environment by executing the following command in your terminal ```sudo apt install openjdk-8-jre```.
+* Download and install the **STM32CubeProgrammer**.
+
+* Replace following two files on your computer with the files you find inside the https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Library/Replace     folder:
+
+  + Replace **usbd_cdc_if.c** inside:  
+  ``` /home/g/.arduino15/packages/STM32/hardware/stm32/1.8.0/cores/arduino/stm32/usb/cdc ```
+  + Replace **variant.c** inside:  
+  ``` /home/g/.arduino15/packages/STM32/hardware/stm32/1.8.0/variants/NUCLEO_L476RG ```
+  
+  * Add **Monsterrhinostep-Lib.zip** and **STM32duino_FreeRTOS.zip** to the Arduino IDE libraries from the menu **Sketch->Include Library->Add ZIP Library**.
+  
+  

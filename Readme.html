@@ -198,9 +198,8 @@ pre code {
 </div>
 <div id="usb-serial-communication" class="section level2">
 <h2>USB serial communication</h2>
-</div>
-<div id="connect-to-monsterrhino-motion" class="section level2">
-<h2>Connect to Monsterrhino Motion</h2>
+<div id="connect-to-monsterrhino-motion" class="section level3">
+<h3>Connect to Monsterrhino Motion</h3>
 <p>Install the Arduino IDE on your computer (<a href="https://www.arduino.cc/en/software" class="uri">https://www.arduino.cc/en/software</a>). Open the Arduino IDE on your computer.</p>
 <ul>
 <li><p>Select the right port under <strong>Tools-&gt;Port</strong> e.g. /dev/ttyACM0 or COM5.</p></li>
@@ -209,8 +208,8 @@ pre code {
 </ul>
 <p>Press the reset button on the Monsterrhino Motion than your ready to type your first command. If you have Motor 1 connected you can for example type: <strong>m1mr 100</strong> into the serial monitor and hit enter - now Motor 1 should move 100 steps. The meaning of this command is: <strong>m1</strong> - motor 1, <strong>mr</strong> move relative, <strong>100</strong> - hundred steps. With <strong>m1mr -100</strong> you can move 100 steps into the other direction.</p>
 </div>
-<div id="commands" class="section level2">
-<h2>Commands</h2>
+<div id="commands" class="section level3">
+<h3>Commands</h3>
 <p>The MonsterrhinoMotion commands are combinations of commands from the list below. They are composed of the classifier: <strong>m, i or f</strong>. A number after the classifier letter selects the desired motor, input, or function: Motor 1 = <strong>m1</strong>, Userfunction 1 = <strong>f1</strong>. The classifier is followed by a function such as targetposition = <strong>tp</strong> and a number.</p>
 <ul>
 <li><strong>m1tp 100</strong> - motor 1 move to target position 100</li>
@@ -462,12 +461,14 @@ pre code {
 </tbody>
 </table>
 </div>
+</div>
 <div id="program-the-monsterrhino-motion-library-with-arduino-ide-or-visualmicro" class="section level2">
 <h2>Program the <strong>Monsterrhino Motion library</strong> with Arduino IDE or VisualMicro</h2>
 <p>To use the the Monsterrhino Motion library it is necessary to install following packages first:</p>
 </div>
 <div id="on-windows" class="section level2">
 <h2>On Windows</h2>
+<p>Tested on Windows 10.</p>
 <div id="install-java-runtime-environment" class="section level3">
 <h3>Install Java Runtime Environment</h3>
 <p>If not already satisfied:</p>
@@ -556,11 +557,24 @@ pre code {
 </ul>
 </div>
 </div>
-<div id="for-ubuntu" class="section level2">
-<h2>For Ubuntu</h2>
+<div id="on-ubuntu" class="section level2">
+<h2>On Ubuntu</h2>
+<p>Tested on Ubuntu 20.04.</p>
 <ul>
-<li><p>install the Java Runtime Environment by executing the following command in your terminal: <code>sudo apt install openjdk-8-jre</code></p></li>
-<li><p>using Ubuntu the <strong>STM32CubeProgrammer</strong> can be installed by executing the install script from a terminal - <em>cd</em> to the location of the file, then run it: <code>./SetupSTM32CubeProgrammer-2.5.0.linux</code></p></li>
+<li><p>Install the Arduino IDE (tested with version 1.8.12)</p></li>
+<li><p>In the Arduino IDE go to <strong>Properties/Additional BoardsManager</strong> and add following</p>
+<p><code>https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json</code></p></li>
+<li><p>Under <strong>Arduino/Boardsmanager</strong> add <code>stm32 cores</code>.</p></li>
+<li><p>Install the Java Runtime Environment by executing the following command in your terminal <code>sudo apt install openjdk-8-jre</code>.</p></li>
+<li><p>Download and install the <strong>STM32CubeProgrammer</strong>.</p></li>
+<li><p>Replace following two files on your computer with the files you find inside the <a href="https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Library/Replace" class="uri">https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Library/Replace</a> folder:</p>
+<ul>
+<li><p>Replace <strong>usbd_cdc_if.c</strong> inside:<br />
+<code>/home/g/.arduino15/packages/STM32/hardware/stm32/1.8.0/cores/arduino/stm32/usb/cdc</code></p></li>
+<li><p>Replace <strong>variant.c</strong> inside:<br />
+<code>/home/g/.arduino15/packages/STM32/hardware/stm32/1.8.0/variants/NUCLEO_L476RG</code></p></li>
+<li><p>Add <strong>Monsterrhinostep-Lib.zip</strong> and <strong>STM32duino_FreeRTOS.zip</strong> to the Arduino IDE libraries from the menu <strong>Sketch-&gt;Include Library-&gt;Add ZIP Library</strong>.</p></li>
+</ul></li>
 </ul>
 </div>
 </div>
