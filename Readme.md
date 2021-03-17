@@ -43,8 +43,9 @@ Install the Arduino IDE on your computer (https://www.arduino.cc/en/software). O
   <br><br>
 
 
-Press the reset button on the Monsterrhino Motion than your ready to type your first command. If you have Motor 1 connected you can for example type: **m1mr 100** into the serial monitor and hit enter - now Motor 1 should move 100 steps. The meaning of this command is: **m1** - motor 1, **mr** move relative, **100** - hundred steps. With **m1mr -100** you can move 100 steps into the other direction. 
+Press the reset button on the Monsterrhino Motion than your ready to type your first command. If you have Motor 1 connected you can for example type: **m1mr 100** into the serial monitor and hit enter - now Motor 1 should move 1000 steps (that is 5 rotations - 200 steps per rotation or 1.8° per step). The meaning of this command is: **m1** - motor 1, **mr** move relative, **1000** - hundred steps. With **m1mr -1000** you can move 1000 steps into the other direction. 
 
+[![600](http://img.youtube.com/vi/Wm-6o_nRb1g/0.jpg)](http://www.youtube.com/watch?v=Wm-6o_nRb1g "Serial communication")
 
 ### Commands
 The MonsterrhinoMotion commands are combinations of commands from the list below. They are composed of the classifier: **m, i or f**. A number after the classifier letter selects the desired motor, input, or function: Motor 1 = **m1**, Userfunction 1 = **f1**. The classifier is followed by a function such as targetposition = **tp** and a number.
