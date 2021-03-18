@@ -219,7 +219,7 @@ Tested on Ubuntu 20.04.
   
 * Under **Arduino/Boardsmanager** add ```stm32 cores```.
 * Install the Java Runtime Environment by executing the following command in your terminal ```sudo apt install openjdk-8-jre```.
-* Download and install the **STM32CubeProgrammer**.
+* Download and install the **STM32CubeProgrammer**. There might be problems with JavaFX, you can try this fix https://askubuntu.com/a/1316213.
 
 * Replace following two files on your computer with the files you find inside the https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Library/Replace     folder:
 
