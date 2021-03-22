@@ -148,6 +148,15 @@ If not already satisfied:
 * You can install it with the default settings. During the installation process, the drivers will be installed to.
 * Verify the installation by opening the programm **STM32CubeProgrammer**. If the program opens normally, everything should be fine.
 
+-----------------------------------------------------------------
+**Attention**
+Check if you can open the **STM32CubeProgrammer** and connect to your MonsterrhinoMotion. Select USB and bring your MonsterrhinoMotion into boot-mode by pressing reset while holding down the boot button. After successfully connecting to your device you should see something similar to:
+
+
+  <br><br>
+  ![](Documentation/Images/stm32.png) 
+  <br><br>
+
 
 ### Following files need to be replaced inside the Arduino folder
 Replace following two files on your computer with the files you find inside the https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Library/Replace folder:
@@ -182,6 +191,10 @@ To add the **MonsterrhinoStep-Lib** to the Arduino IDE download the **Monsterrhi
   + Board part number: **Nucleo L476RG**
   + USB support (if available): **CDC (generic 'Serial' supersede U(S)ART-)**
   + Upload method: **STM32CubeProgrammer (DFU)** 
+  
+  <br><br>
+  ![](Documentation/Images/settings.png) 
+  <br><br>
   
 
 ### Upload your MonsterrhinoMostion application to your MonsterrhinoMotion card
@@ -220,6 +233,26 @@ Tested on Ubuntu 20.04.
 * Under **Arduino/Boardsmanager** add ```stm32 cores```.
 * Install the Java Runtime Environment by executing the following command in your terminal ```sudo apt install openjdk-8-jre```.
 * Download and install the **STM32CubeProgrammer**. There might be problems with JavaFX, you can try this fix https://askubuntu.com/a/1316213.
+
+
+  **Attention**
+  Check if you can open the **STM32CubeProgrammer** and connect to your MonsterrhinoMotion. Select USB and bring your MonsterrhinoMotion into boot-mode by pressing reset while holding down the boot button. It might be usefull to open the **STM32CubeProgrammer** via the terminal, so you get some information if something is not right.
+  
+  **Note**
+  If in your terminal you read something about **permission denied** it might be necessary to copy a rules.d file to the STM32 folder. To do so you can follow this instructions: 
+  
+  * Make sure you have installed this library: ```sudo apt-get install libusb-1.0-0```
+  * To allow STM32CubeProgrammer to access the USB port through low-level commands, proceed as follows: 
+  ```cd $HOME/STM32MPU_workspace/STM32MPU-Tools/STM32CubeProgrammer-x.y.z/Drivers/rules```
+  * Then execute: ```sudo cp *.* /etc/udev/rules.d/```
+  * Restart the STM32CubeProgrammer 
+  
+  **After successfully connecting** to your device you should see something similar to:
+  
+    <br><br>
+    ![](Documentation/Images/stm32.png) 
+    <br><br>
+    
 
 * Replace following two files on your computer with the files you find inside the https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Library/Replace     folder:
 
