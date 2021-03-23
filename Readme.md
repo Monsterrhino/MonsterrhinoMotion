@@ -239,7 +239,7 @@ Tested on Ubuntu 20.04.
   Check if you can open the **STM32CubeProgrammer** and connect to your MonsterrhinoMotion. Select USB and bring your MonsterrhinoMotion into boot-mode by pressing reset while holding down the boot button. It might be usefull to open the **STM32CubeProgrammer** via the terminal, so you get some information if something is not right.
   
   **Note**
-  If in your terminal you read something about **permission denied** it might be necessary to copy a rules.d file to the STM32 folder. To do so you can follow this instructions: 
+  If in your terminal you read something about **permission denied** it might be necessary to copy a rules.d file to the STM32 folder. To do so you can follow this instructions (taken from: https://community.st.com/s/question/0D53W000000aP9J/no-stm32-device-in-dfu-mode-connected): 
   
   * Make sure you have installed this library: ```sudo apt-get install libusb-1.0-0```
   * To allow STM32CubeProgrammer to access the USB port through low-level commands, proceed as follows: 
@@ -262,5 +262,8 @@ Tested on Ubuntu 20.04.
   ``` /home/g/.arduino15/packages/STM32/hardware/stm32/1.8.0/variants/NUCLEO_L476RG ```
   
   * Add **Monsterrhinostep-Lib.zip** and **STM32duino_FreeRTOS.zip** to the Arduino IDE libraries from the menu **Sketch->Include Library->Add ZIP Library**.
-  
+
+* If you whant to use a **STM32nucleo** to program over **ST-Link** it might be necessary to give permission to the USB device (as described here: https://stackoverflow.com/questions/22713834/libusb-cannot-open-usb-device-permission-isse-netbeans-ubuntu): 
+ ``` sudo chmod o+w /dev/bus/usb/123/456 ```
+
   

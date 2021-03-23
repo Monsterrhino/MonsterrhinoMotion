@@ -573,7 +573,7 @@ pre code {
 <li><p>Install the Java Runtime Environment by executing the following command in your terminal <code>sudo apt install openjdk-8-jre</code>.</p></li>
 <li><p>Download and install the <strong>STM32CubeProgrammer</strong>. There might be problems with JavaFX, you can try this fix <a href="https://askubuntu.com/a/1316213" class="uri">https://askubuntu.com/a/1316213</a>.</p>
 <p><strong>Attention</strong> Check if you can open the <strong>STM32CubeProgrammer</strong> and connect to your MonsterrhinoMotion. Select USB and bring your MonsterrhinoMotion into boot-mode by pressing reset while holding down the boot button. It might be usefull to open the <strong>STM32CubeProgrammer</strong> via the terminal, so you get some information if something is not right.</p>
-<p><strong>Note</strong> If in your terminal you read something about <strong>permission denied</strong> it might be necessary to copy a rules.d file to the STM32 folder. To do so you can follow this instructions:</p>
+<p><strong>Note</strong> If in your terminal you read something about <strong>permission denied</strong> it might be necessary to copy a rules.d file to the STM32 folder. To do so you can follow this instructions (taken from: <a href="https://community.st.com/s/question/0D53W000000aP9J/no-stm32-device-in-dfu-mode-connected" class="uri">https://community.st.com/s/question/0D53W000000aP9J/no-stm32-device-in-dfu-mode-connected</a>):</p>
 <ul>
 <li>Make sure you have installed this library: <code>sudo apt-get install libusb-1.0-0</code></li>
 <li>To allow STM32CubeProgrammer to access the USB port through low-level commands, proceed as follows: <code>cd $HOME/STM32MPU_workspace/STM32MPU-Tools/STM32CubeProgrammer-x.y.z/Drivers/rules</code></li>
@@ -590,6 +590,7 @@ pre code {
 <code>/home/g/.arduino15/packages/STM32/hardware/stm32/1.8.0/variants/NUCLEO_L476RG</code></p></li>
 <li><p>Add <strong>Monsterrhinostep-Lib.zip</strong> and <strong>STM32duino_FreeRTOS.zip</strong> to the Arduino IDE libraries from the menu <strong>Sketch-&gt;Include Library-&gt;Add ZIP Library</strong>.</p></li>
 </ul></li>
+<li><p>If you whant to use a <strong>STM32nucleo</strong> to program over <strong>ST-Link</strong> it might be necessary to give permission to the USB device (as described here: <a href="https://stackoverflow.com/questions/22713834/libusb-cannot-open-usb-device-permission-isse-netbeans-ubuntu" class="uri">https://stackoverflow.com/questions/22713834/libusb-cannot-open-usb-device-permission-isse-netbeans-ubuntu</a>): <code>sudo chmod o+w /dev/bus/usb/123/456</code></p></li>
 </ul>
 </div>
 </div>
