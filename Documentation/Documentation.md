@@ -476,7 +476,7 @@ Events provide the machine to react on different actions depending on motor stat
 
 ```C++
 pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR1PosReached);
-//TODO: Add other examples
+
 ```
 ## Homing
 
@@ -527,8 +527,8 @@ g_Motor3.MotorFunction_TiggerStart(MOTOR_FUNCTION_HOMING);
 pUserFunction->MotorHomingOk(LOCK_MOTOR3, par);
 ```
 ### Sensorless homing
-It is also possible to home without limit switches using StallGuard2.  
-TODO
+It is also possible to home without limit switches using the motor stall detection feature.  
+
 
 ## Input
   
