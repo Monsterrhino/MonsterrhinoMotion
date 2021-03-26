@@ -105,7 +105,7 @@ Unlock|u|unlook
 
 ## Program the **Monsterrhino Motion library** with Arduino IDE or VisualMicro
 
-To use the the Monsterrhino Motion library it is necessary to install following packages first:
+To use the the Monsterrhinosteb-Lib (https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Library) library it is necessary to install following packages first:
 
 ## On Windows
 Tested on Windows 10.
