@@ -299,6 +299,50 @@ g_Motor1.SetMaxSpeed(100);
 In this mode velocity remains unchanged, unless a stop event occurs.
 If you change velocity after ramp mode was set to hold mode nothing happens.
 
+### Motor stall detection
+
+The MonsterrhinoMotion card can detect **motor stall** by measuring the back EMF (electro magnetic force) of the stepper motor. This is a useful feature for certain applications such as colaborative robots. Our library makes it relatively simple to implement this feature into your application, following function starts motor 1 with in the stall detection mode: 
+
+```C++
+uint32_t RunStallGuard(UserFunction *pUserFunction){
+   
+    g_Motor1.SetRampMode(MotorClass::VELOCITY_MODE);
+    TMC5160_Reg::COOLCONF_Register coolconf = g_Motor1.GetCOOLCONF();
+    TMC5160_Reg::SW_MODE_Register swMode = g_Motor1.GetSW_Mode();
+    g_Motor1.SetMaxSpeed(run_speed);
+    g_Motor1.SetModeChangeSpeeds(0, 50, 0);
+    coolconf.sgt = 5; // Value from -64 .. 63. This value needs to be adjusted acording to your desired motor stop point 
+    g_Motor1.SetCOOLCONF(coolconf);
+    swMode.sg_stop = 1;
+    vTaskDelay(1000);
+    g_Motor1.SetSW_Mode(swMode);
+    Serial.println("SG Active Left!");
+   
+    return 1;
+  
+}
+
+```
+The correct operation depends on the setting of the ```coolconf.sgt ``` factor, motor current setting, and motor speed setting. This settings have to be tuned for a correct functioning of this feature. The motor stall feature works only with ```SetRampMode(MotorClass::VELOCITY_MODE)```, due to the need of a steady motion of the motor in order to measure the back EMF.
+
+
+The relative force measured on the stepper motor can be requested using following function:  
+
+```C++
+uint32_t TuneStallGuard2View(UserFunction *pUserFunction)
+{
+
+      TMC5160_Reg::DRV_STATUS_Register drvStatus = { 0 };
+      drvStatus = g_Motor1.GetDrvStatus();
+      
+      return drvStatus.sg_result;
+}
+
+```
+A fully working example of this function can be found here: https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Documentation/ExampleCpps/DetectMotorStall
+
+Simply open your ArduinoIDE and go to **Files->Examples->Monsterrhinostep->monsterrhinostep** and open the library example. Copy and past the content of **monsterrhinostep**, **User_Function1**, and **User_Function2** of the DetectMotorStall example to the acording files in your ArduinoIDE, compile and upload to the MonsterrhinoMotion card and enjoy.
+
 ## Startup parameters
 
 Motors have many values that are set default after reset.  
