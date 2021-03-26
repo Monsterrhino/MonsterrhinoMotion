@@ -113,3 +113,9 @@ It might also be necessary to change the motor currents, depending on the motors
 		g_Motor4.SetMotorCurrent(100);
 		g_Motor4.SetMotorCurrentHold(10);
 ```
+
+**Have fun!**
+  <br><br>
+  ![](images/1.jpg)
+  <br><br>
+

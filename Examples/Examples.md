@@ -1,15 +1,18 @@
----
-title: "Monsterrhino Motion: EXAMPLES"
-output: 
-  bookdown::html_document2:
-    toc: true
-    toc_float: true
-    fig_caption: true
----
 
-# Getting started
+- [Monsterrhino Motion examples](#heading)
+- [USB](#heading-1)
+- [CAN](#heading-2)
+- [Programming the Motion](#heading-3)
+  * [Motor setup](#sub-heading-3)
+  * [Target position](#sub-heading-3)
+  * [Homing](#sub-heading-3)
+  * [Input](#sub-heading-3)
+  
 
-MonsterrhinoMotion features three main ways to be controlled:  
+
+# Monsterrhino Motion examples
+
+The **MonsterrhinoMotion** card can be controlled in three differnt ways:  
 
 ## USB
 UART is the simplest way to give commands. MonsterrhinoMotion can be controlled directly, out of the box, via UART-communication.  
@@ -32,7 +35,7 @@ CAN is a commonly used communication system in automotive, automation and others
 Due to its high reliability and higher speed than UART it can be used to communicate with the Motion from another Motion or, as an example, a RaspberryPi or Arduino (with their CAN-module).
 For further information see the documentation (~/Documentation).
 
-[TODO: Insert image of simple CAN functionality]: <>
+
 
 ## Programming the Motion
 It is possible to program various functions on the Motion, this enables a fully autonomous and dynamic system.  
@@ -43,13 +46,8 @@ The main structure of the code consists of six "UserFunction" files (User_Functi
 
 The following examples show you how to program easy movements of stepper motors, changing motor behavior,... .  
 
-[TODO: Insert image of file blocks main, userfunc1,etc]: <>
 
-# Programming examples
-
-This documentation shows you easy and more complex ways to program a MonsterrhinoMotion.
-
-## Motor setup
+### Motor setup
 *(~/ExamplesCpp/Example1_MotorSetup.cpp)*
 
 To run a stepper motor, first you need to set up the main motor parameters as motor current, speed, acceleration and others.
@@ -80,7 +78,7 @@ uint32_t UserFunction1(uint32_t par, UserFunction* pUserFunction)
 ```
 In the following examples the function "MotorInit" is used but not shown.  
 
-## Target position
+### Target position
 *(~/ExamplesCpp/Example2_TargetPosition.cpp)*  
 
 With the motor-command **SetTargetPosition** you can choose a desired position of your motor, which it will reach.  
@@ -106,7 +104,7 @@ g_Motor1.SetCurrentPosition(10);
 g_Motor1.SetMoveRelative(150);  
 //Motor moves 150 steps relative from current position
 ```
-## Homing
+### Homing
 *(~/ExamplesCpp/Example3_Homing.cpp)*  
 
 Homing is used to have a reference point in your mechanical system. After successful homing you have the start point of your system.  
@@ -158,7 +156,7 @@ uint32_t UserFunction1(uint32_t par, UserFunction* pUserFunction)
 }
 ```
 
-## Input
+### Input
 *(~/ExamplesCpp/Example4_Input.cpp)*  
 
 The MonsterrhinoMotion is able to read 12 digital inputs. These inputs can be set as an interrupt or can be controlled during a process manually.
@@ -175,4 +173,3 @@ void ExtraInit()
 ```
 More options for an interrupt declaration can be found in the documentation.
 
-# CAN examples
