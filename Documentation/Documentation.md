@@ -496,7 +496,7 @@ g_Motor1.m_HomingParameters.mode = 1;
 g_Motor1.m_HomingParameters.rampSpeedHold = 200.0;
 g_Motor1.m_HomingParameters.homingOffset = 15.0;
 ```  
-* **mode:** homing on the left (1) or right (2) side. 0 is homing off.
+* **mode:** homing on the **left (1)** or **right (2)** side or **both sides (3)**. 0 is homing off.
 * **timeOut:** Timeout without successful homing
 * **maxPos:** Maximal position without successful homing  (in microsteps)
 * **rampSpeed:** Initial speed in homing (step 1); default is Default_Startup_MaxSpeed
@@ -516,7 +516,7 @@ In step 3, motor turns 100 steps til it reaches the limit switch, otherwise ther
 The motor gets set in POSITIONING MODE when homing. 
 Step 4 speed is startup_maxSpeed.
 
-TODO: Latched pos ?
+
 
 ### Normal homing
 When setting the "MOTOR_FUNCTION_HOMING" start-trigger, the motor begins homing with the **pre-selected** parameters.  
@@ -526,8 +526,31 @@ The next command is to keep the motor locked until the homing event is finished.
 g_Motor3.MotorFunction_TiggerStart(MOTOR_FUNCTION_HOMING);
 pUserFunction->MotorHomingOk(LOCK_MOTOR3, par);
 ```
+
+
+### Parallel homing
+
+It is possible to home multipe axis in parallel or simultaneously. Following code homes for example **Motor1** and **Motor2**:
+
+```C++
+g_Motor1.ResetRampStatus();   // Resets the limit switch register
+g_Motor2.ResetRampStatus();   
+
+g_Motor1.MotorFunction_TiggerStart(MOTOR_FUNCTION_HOMING);    // Starts homing on motor1
+g_Motor2.MotorFunction_TiggerStart(MOTOR_FUNCTION_HOMING);    // Starts homing on motor2
+
+pUserFunction->MotorHomingOk(LOCK_MOTOR1 | LOCK_MOTOR2, par);   // Waits for motor 1 und motor 2 to finish homing
+```
+
+This methodology allows to home all four axis of the MonsterrhinoMotion card in parallel. An example of multiple axis homing can be seen here: 
+
+https://www.youtube.com/channel/UCkQM9dfGWviW-XfwOgTvgYg
+
+
 ### Sensorless homing
-It is also possible to home without limit switches using the motor stall detection feature.  
+It is also possible to home without limit switches using the motor stall detection feature. Example code is provided in the section **Motor stall detection**. The function is presented in following video:  
+
+https://www.youtube.com/watch?v=vMpDnNlyOfQ
 
 
 ## Input

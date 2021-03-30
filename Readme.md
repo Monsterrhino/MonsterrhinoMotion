@@ -1,7 +1,7 @@
-# Monsterrhino Motion
+# MonsterrhinoMotion
 
 ## Introduction
-The Monsterrhino Motion card is an independent stepper motor driver card to power and control up to 4 stepper motors that comes with a pre-installed firmware.
+The MonsterrhinoMotion card is an independent stepper motor driver card to power and control up to 4 stepper motors that comes with a pre-installed firmware. The MonsterrhinoMotion card uses high quality stepper drivers (TMC5160) from Trinamic.
 You can use Monsterrhino Motion in different ways depending on the complexity of your project: 
 
 - Use the pre-installed library by sending commands **over a serial USB port** using a variety of predefined functions (see below)
@@ -103,7 +103,7 @@ Startup|st|startup
 Unlock|u|unlook
 
 
-## Program the **Monsterrhino Motion library** with Arduino IDE or VisualMicro
+## Program the **Monsterrhinostep library** with Arduino IDE or VisualMicro
 
 To use the the Monsterrhinosteb-Lib (https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Library) library it is necessary to install following packages first:
 
