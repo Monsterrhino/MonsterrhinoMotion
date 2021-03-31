@@ -232,18 +232,21 @@ In the following examples the function "MotorInit" is used but not shown.
 
 ![Ramp behaviour (Datasheet TMC5160/A)](Images/TMC5160_rampBeh.png)
 
-Following the ramp behavior you can adjust the parameters:  
+According to the shown diagram you can adjust following parameters of the ramp behavior:  
 
 * **Acceleration:** Start(A1) and Max(Amax)
 * **Deceleration:** Final(D1) and Max(Dmax)
 * **MaxSpeed:** From 0 to ?
-* **RampSpeed:** Start,Stop,Hold  
+* **RampSpeed:** Start, Stop, Hold  
 
-An example to set these parameters (with the startup values) is shown here.
+```C++
+g_Motor1.SetRampSpeeds(VSTART, VMAX, VHOLD)
+```
+An example to set these parameters from the EEBROM (with the startup values) is shown here.
 ```C++
 g_Motor1.SetRampSpeeds(
 g_Motor1.GetStartup_RampSpeedsStart(), g_Motor1.GetStartup_RampSpeedsStop(), g_Motor1.GetStartup_RampSpeedsHold()
-); //V1,VMAX, VSTOP
+); //V1,VMAX, VHOLD
 
 g_Motor1.SetAccelerations(
 g_Motor1.GetStartup_AccelerationsAMax(), g_Motor1.GetStartup_AccelerationsDMax(), g_Motor1.GetStartup_AccelerationsA1(), g_Motor1.GetStartup_AccelerationsD1()
@@ -252,6 +255,12 @@ g_Motor1.GetStartup_AccelerationsAMax(), g_Motor1.GetStartup_AccelerationsDMax()
 
 **Note:** Value *Vstart* is default zero.  
 **See also:** Serial [Motor commands] ramp mode (*m1rs,m1rc, m1as*)
+
+Using following command you can set the three values (VSTART, VMAX, VHOLD) as equal value:
+```C++
+g_Motor2.SetMaxSpeed(V);
+```
+
 
 ### Ramp mode
 ```C++
@@ -270,12 +279,19 @@ There are three different ramp modes:
 
 ### Positioning mode
 
-This is the normal mode for a stepper motor.
-These two functions describe the main action that can be programmed:  
+Set motor to positioning mode:
+```C++
+g_Motor1.SetRampMode(MotorClass::RampMode::POSITIONING_MODE);
+```
 
-* **TargetPosition**
-* **MoveRelative**  
+This mode allows you to move a defined number of steps.
 
+* **TargetPosition**: this mode moves to the given position e.g. if the motor is on position 100 and you set ``` g_Motor1.SetTargetPosition(-200.0);  ``` the motor will automatically move -300 steps to the position -200. If the motor is on position -100 and you set ``` g_Motor1.SetTargetPosition(-200.0);  ``` the motor will move -100 stepps.
+
+* **MoveRelative**: this mode moves the motor indipendent of the current position e.g. if the motor is on position 100 an you set   ``` g_Motor2.SetMoveRelative(40);``` it will move to position 140. If you repeat the command again you will move to position 180.
+
+#### Non blocking move
+If it is intendet that the program continous while the motor moves to a given position you can simply use this commands: 
 ```C++
 g_Motor1.SetTargetPosition(200.0);  
 //Set target position to 200 steps (double value)
@@ -283,10 +299,36 @@ g_Motor1.SetMoveRelative(10.0);
 //Set target position 10 steps relative from current position
 ```
 
+The same works also in negative direction:
+```C++
+g_Motor1.SetTargetPosition(-200.0);  
+//Set target position to -200 steps (double value)
+g_Motor1.SetMoveRelative(-10.0);     
+//Set target position -10 steps relative from current position
+```
+#### Blocking move
+If you want to pause your program until the movement of a motor has finished you can do that as follows:
+```C++
+g_Motor2.SetMoveRelative(40);
+pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR2PosReached);  // waits until the target position has reached 
+if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;       // waits until the target position has reached
+```
+This also works with moving to an absolute position:
+```C++
+g_Motor2.SetTargetPosition(-200.0);
+pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR2PosReached);  // waits until the target position has reached 
+if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;       // waits until the target position has reached
+```
+However for going to an absolute position you can also use the one-liner:
+```C++
+if (pUserFunction->SetTargetPosition_MotorWait(g_Motor2, -30.0f) == USERFUNCTIONEVENT_EXIT) return false;
+```
+
+
 ### Velocity mode  
 In this mode the motor turns with the maximum speed.
 ```C++
-g_Motor1.SetRampMode(MotorClass::RampMode::VELOCITY_MODE)
+g_Motor1.SetRampMode(MotorClass::RampMode::VELOCITY_MODE);
 //Set ramp mode to "VelocityMode"
 g_Motor1.SetMaxSpeed(100);
 //Set maximum speed to 100 steps/sec
@@ -294,10 +336,22 @@ g_Motor1.SetMaxSpeed(100);
 
 **Note:** When changed to this mode, max speed is zero. To begin set **max speed** to a value greather than 0.  
 
-### Hold mode
+### Move to sensor
 
-In this mode velocity remains unchanged, unless a stop event occurs.
-If you change velocity after ramp mode was set to hold mode nothing happens.
+Sometimes you want to move a motor until you get a signal from a sensor or switch (like when you do homing), but afterwards you want to ignore the sensor signal (and cross the sensor) you can do that with following lines of code (moves motor 2 until the input 1 is pulled down):
+
+
+```C++
+g_Motor2.SetMaxSpeed(100);
+g_Motor2.SetTargetPosition(10000);
+pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_INPUT1_RisingHigh);
+if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;
+  
+g_Motor2.SetCurrentPosition(0.0f);
+g_Motor2.SetTargetPosition(0.0f);
+
+```
+
 
 ### Motor stall detection
 
@@ -342,6 +396,16 @@ uint32_t TuneStallGuard2View(UserFunction *pUserFunction)
 A fully working example of this function can be found here: https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Documentation/ExampleCpps/DetectMotorStall
 
 Simply open your ArduinoIDE and go to **Files->Examples->Monsterrhinostep->monsterrhinostep** and open the library example. Copy and past the content of **monsterrhinostep**, **User_Function1**, and **User_Function2** of the DetectMotorStall example to the acording files in your ArduinoIDE, compile and upload to the MonsterrhinoMotion card and enjoy.
+
+### Hold mode
+
+In this mode velocity remains unchanged, unless a stop event occurs.
+If you change velocity after ramp mode was set to hold mode nothing happens.
+
+Set motor to positioning mode:
+```C++
+g_Motor1.SetRampMode(MotorClass::RampMode::HOLD_MODE);
+```
 
 ## Startup parameters
 
@@ -548,7 +612,8 @@ https://www.youtube.com/channel/UCkQM9dfGWviW-XfwOgTvgYg
 
 
 ### Sensorless homing
-It is also possible to home without limit switches using the motor stall detection feature. Example code is provided in the section **Motor stall detection**. The function is presented in following video:  
+It is also possible to home without limit switches using the motor stall detection feature. Example code is provided in the section **Motor stall detection**. The function 
+is presented in following video:  
 
 https://www.youtube.com/watch?v=vMpDnNlyOfQ
 
