@@ -146,6 +146,18 @@ s|cs  |canspeed          |(value)
 s|ld  |load              |-
 s|d   |debug             |-
 
+### Userfunction commands
+
+function|subfunction1|subfunction1|subfunction2
+-|--|---         |-----  
+f|s  |start   |(value)
+f|t, b  |stop, break   |(value)
+f|v  |variable  |(?)(value)
+f|f  |float  |(?)(value)
+f|st  |startup |(value)
+f|u  |unlock |(value)
+
+
 # Programming
 It is possible to program various functions on the MonsterrhinoMotion, this enables a fully autonomous and dynamic system.  
 The main structure of the code consists of six "UserFunction" files (User_Function1.cpp) and the main file ("monsterrhinostep.ino").  
