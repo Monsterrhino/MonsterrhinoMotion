@@ -550,10 +550,30 @@ Special functions are stall guard, coolStepping, power stage tuning and stealth 
 ### Events
 Events provide the machine to react on different actions depending on motor status, user function status, input status and time.  
 
+#### SetOrCondition
+This function waits until one (or one of multiple conditions is satisfied) condition is satisfied. 
 ```C++
 pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR1PosReached);
-
+if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;
 ```
+of multple conditions: 
+```C++
+pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR1PosReached | MOTORIOEVENT_MOTOR4PosReached);
+if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;
+```
+#### SetAndCondition
+This function waits until all given conditions are satisified.
+```C++
+pUserFunction->m_MotorIoEvent.SetAndCondition(MOTORIOEVENT_MOTOR3PosReached);
+if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;
+```
+of multple conditions: 
+ 
+```C++
+pUserFunction->m_MotorIoEvent.SetAndCondition(MOTORIOEVENT_MOTOR3PosReached | MOTORIOEVENT_MOTOR4PosReached);
+if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;
+```
+
 ## Homing
 
 ![](Images/Homing.gif)
