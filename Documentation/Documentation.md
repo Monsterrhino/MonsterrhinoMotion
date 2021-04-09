@@ -553,27 +553,42 @@ Events provide the machine to react on different actions depending on motor stat
 #### SetOrCondition
 This function waits until one (or one of multiple conditions is satisfied) condition is satisfied. 
 ```C++
+g_Motor1.ResetRampStatus();
+
 pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR1PosReached);
 if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;
 ```
 of multple conditions: 
 ```C++
+g_Motor1.ResetRampStatus();
+g_Motor4.ResetRampStatus();
+
 pUserFunction->m_MotorIoEvent.SetOrCondition(MOTORIOEVENT_MOTOR1PosReached | MOTORIOEVENT_MOTOR4PosReached);
 if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;
 ```
+
+The ```g_Motor2.ResetRampStatus();``` is necessary to clear the event status. 
+
 #### SetAndCondition
 This function waits until all given conditions are satisified.
 ```C++
+g_Motor3.ResetRampStatus();
+
 pUserFunction->m_MotorIoEvent.SetAndCondition(MOTORIOEVENT_MOTOR3PosReached);
 if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;
 ```
 of multple conditions: 
  
 ```C++
+g_Motor3.ResetRampStatus();
+g_Motor4.ResetRampStatus();
+
 pUserFunction->m_MotorIoEvent.SetAndCondition(MOTORIOEVENT_MOTOR3PosReached | MOTORIOEVENT_MOTOR4PosReached);
 if (pUserFunction->WaitEvent() == USERFUNCTIONEVENT_EXIT) return false;
 ```
 
+The ```g_Motor2.ResetRampStatus();``` is necessary to clear the event status. 
+ 
 ## Homing
 
 ![](Images/Homing.gif)
