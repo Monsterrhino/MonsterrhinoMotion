@@ -115,10 +115,53 @@ m|cc  |coolconf          |(?), other functions
 m|smp |savemotorparameter|-
 m|iv  |icversion         |(?)
 m|ld  |load              |default or defaultall TODO:?
-m|st  |startup           |(?), other functions to set/get startup values
+m|st  |**startup**           |(?), other functions to set/get startup values **see 2.1.2**
 m|ho  |homing            |(?), other functions to set/get homing values
 m|tsc |tunesteathchop    |-
 m|tps |tunestallguard    |-
+
+
+### Startup (st) parameter
+
+Parameter | aberration
+:---|:--:
+drvStrength | drs
+bbmTime | bt
+bbmClks | bc
+SenseResistor | sr
+MotorCurrent | mA
+MotorCurrentReduction | mAr
+Freewheeling | fwm
+Iholddelay | ihd
+PwmOfsInitial | poi
+PwmGradInitial | pgi
+StepperDirection | sd
+MotorSteps | mst
+PWMThrs | pt
+COOLThrs | ct
+HighThrs | ht
+SWMode | swm
+RampMode | rm
+RampMaxSpeed | ms
+RampSpeedsStart | rms
+RampSpeedsStop | rmt"
+RampSpeedsHold | rmh"
+AccelerationsAMax | AMax"
+AccelerationsDMax | DMax"
+AccelerationsA1 | A1"
+AccelerationsD1 | D1"
+CoolConf | CC"
+EncoderResolution | er"
+EncoderAlloweddeviation | ead"
+EncoderSetup | es"
+EncoderInverted | ei"
+HomingMode | hm"
+HomingOffset | ho
+HomingMaxPos | hp
+HomingTimeout | ht
+HomingSpeed_2 | hs2
+HomingDmax | hd
+
 
 ### Input commands
 
