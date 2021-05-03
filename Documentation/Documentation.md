@@ -162,6 +162,16 @@ HomingTimeout | ht
 HomingSpeed_2 | hs2
 HomingDmax | hd
 
+For example if you whant to invert the rotation direction of the stepper motor 1 you can execute following commands:
+```C++
+m1st sd ?
+```
+This returns you e.g. **Get Startup:   StepperDirection: 1**. Now you can change the direction by executing:
+```C++
+m1st sd 0
+m1smp
+```
+Reset the card and the motor will spin now in the opposite direction.
 
 ### Input commands
 
