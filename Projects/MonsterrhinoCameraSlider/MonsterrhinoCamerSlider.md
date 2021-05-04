@@ -18,7 +18,6 @@
 * Download the Python3 GUI software (https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Projects/MonsterrhinoCameraSlider/python3) to the Raspberry Pi. You need to install some extra Python packages:
 
 ```Python
-sudo python3 led.py 
 sudo pip3 install pillow
 sudo apt-get install python3-pil python3-pil.imagetk
 sudo apt-get install python3-opencv
