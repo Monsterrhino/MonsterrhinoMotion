@@ -173,6 +173,7 @@ m1smp
 ```
 Reset the card and the motor will spin now in the opposite direction.
 
+
 ### Input commands
 
 function|subfunction1|subfunction1|subfunction2
@@ -212,6 +213,15 @@ f|u  |unlock |(value)
 
 
 # Programming
+
+
+**_ATTENTION_**:
+To use this feature of the MonsterrhinoMotion card make sure you installed the requirements as described here: https://github.com/Monsterrhino/MonsterrhinoMotion
+
+Follow the instructions under section: **Program the Monsterrhinostep library with Arduino IDE or VisualMicro**.
+
+<br>
+
 It is possible to program various functions on the MonsterrhinoMotion, this enables a fully autonomous and dynamic system.  
 The main structure of the code consists of six "UserFunction" files (User_Function1.cpp) and the main file ("monsterrhinostep.ino").  
 

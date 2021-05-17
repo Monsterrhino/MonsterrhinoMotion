@@ -149,8 +149,8 @@ If not already satisfied:
 * Verify the installation by opening the programm **STM32CubeProgrammer**. If the program opens normally, everything should be fine.
 
 -----------------------------------------------------------------
-**Attention**
-Check if you can open the **STM32CubeProgrammer** and connect to your MonsterrhinoMotion. Select USB and bring your MonsterrhinoMotion into boot-mode by pressing reset while holding down the boot button. After successfully connecting to your device you should see something similar to:
+**_Attention_:**
+Check if you can open the **STM32CubeProgrammer** and connect to your MonsterrhinoMotion. Select USB and **bring your MonsterrhinoMotion into boot-mode** by pressing reset while holding down the boot button. After successfully connecting to your device you should see something similar to:
 
 
   <br><br>
@@ -164,11 +164,18 @@ Replace following two files on your computer with the files you find inside the 
 
   + Replace **usbd_cdc_if.c** inside:  
   ```C:\Users\username\AppData\Local\Arduino15\packages\STM32\hardware\stm32\1.8.0\cores\arduino\stm32\usb\cdc```
+  **or**
+  ```C:\Users\username\Documents\ArduinoData\packages\STM32\hardware\stm32\1.9.0\cores\arduino\stm32\usb\cdc ```
+   **-** depending on location of your installation (it could also be a different location). 
   
   + Replace **variant.c** inside:  
-  ```C:\Users\username\AppData\Local\Arduino15\packages\STM32\hardware\stm32\1.8.0\variants\NUCLEO_L476RG```
-  
-  
+  ```C:\Users\username\AppData\Local\Arduino15\packages\STM32\hardware\stm32\1.8.0\variants\NUCLEO_L476RG ``` 
+  **or**
+  ```C:\Users\username\Documents\ArduinoData\packages\STM32\hardware\stm32\1.8.0\variants\NUCLEO_L476RG ```
+   **-** depending on location of your installation (it could also be a different location). 
+
+### Add the **STM32duino_FreeRTOS.zip** to the Arduino IDE:
+The **STM32duino_FreeRTOS.zip** can be found here: https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Library. Download it and add **STM32duino_FreeRTOS.zip** to the Arduino IDE libraries from the menu **Sketch->Include Library->Add ZIP Library**.
   
 ### Add the **MonsterrhinoStep-Lib** to the Arduino IDE:
 To add the **MonsterrhinoStep-Lib** to the Arduino IDE download the **MonsterrhinoStep-Lib.zip** from https://github.com/Monsterrhino/MonsterrhinoMotion/tree/master/Library and proceed with following steps:
