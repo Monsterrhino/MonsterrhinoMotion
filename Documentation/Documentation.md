@@ -84,6 +84,99 @@ m2cp ?    (MOtor 2 returns current position)
 ```
 **Attention:** Motion needs to be in normal mode **not** boot mode! Led is blinking
 
+### Serial commands - Arduino
+First install the Arduino IDE on your computer. Open the Arduino IDE and connect the MonsterrhinoMotion card via USB cable. Supply the MonsterrhinoMotion with 24V, now you should see the green power indicator LED permanently shine. After plugin in the USB to the computer and pressing the Reset button on the MonsterrhinoMotion a second green LED should start blinking.
+
+In the Arduino IDE select the port of your MonsterrhinoMotion, if the MonsterrhinoMotion is the only device you have connected to your computer you should see only one device in your list:
+<br>
+
+![](Images/port_device.png)
+
+<br>
+After choosing the correct device you should see it in the menu e.g. **Port: "/dev/ttyACM0"** on Linux or **Port: "COM3"** on Windows.
+<br>
+
+![](Images/port_device2.png)
+
+<br>
+Now open the **Serial monitor** of Arduino by clicking on the **magnifying glass** symbol.
+<br>
+
+![](Images/open_serial_monitor.png)
+
+<br>
+In the serial monitor window adjust following settings: 
+
+* Line ending: Both CR & LF
+* Baud rate: 115200
+<br>
+
+![](Images/serial_monitor_setting.png)
+
+
+### Serial commands - Python
+
+Here we show an example of how Python can be used to send serial commands to the MonsterrhinoMotion card. 
+First you need to make sure you have **Python3** and the package **pyserial** installed. 
+
+Following minimal example shows you how to interact with the MonsterrhinoMotion card using Python.
+
+As first step in your Python program you need to import the pyserial package:
+
+
+```Python
+import serial, time
+```
+
+Setup and open the serial port:
+
+
+```Python
+ser = serial.Serial()
+# ser.port = '/dev/ttyUSB0'
+ser.port = 'COM3'
+ser.baudrate = 115200
+ser.bytesize = serial.EIGHTBITS  # number of bits per bytes
+ser.parity = serial.PARITY_NONE  # set parity check: no parity
+ser.stopbits = serial.STOPBITS_ONE  # number of stop bits
+# ser.timeout = None          #block read
+ser.timeout = 1  # non-block read
+# ser.timeout = 2              #timeout block read
+ser.xonxoff = False  # disable software flow control
+ser.rtscts = False  # disable hardware (RTS/CTS) flow control
+ser.dsrdtr = False  # disable hardware (DSR/DTR) flow control
+ser.writeTimeout = 2  # timeout for write
+
+# open COM port
+ser.open()
+```
+
+Now you can define a function to send serial commands to the MonsterrhinoMotion:
+
+```Python
+def write_to_Monsterrhino(cmd):
+        if ser.isOpen:
+            print("Write: " + str(cmd))
+            message = "{}\n\r".format(cmd)
+            print(message)
+            ser.write(str.encode(message))
+```
+
+Using this function you can send for example a command to move relative 400 steps:
+
+```Python
+write_to_Monsterrhino("m1mr 400")
+
+```
+
+After you completed the operations close the serial port by issuing following command:
+
+```Python
+ser.close()
+
+```
+
+
 
 ### Motor commands
 
