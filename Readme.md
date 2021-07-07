@@ -57,7 +57,7 @@ The MonsterrhinoMotion commands are combinations of commands from the list below
 
 The questionmark can generally be used to request a current value e.g. Motor 1 what is the current position = **m1tp ?**.
 
-Motor |**m**    |**motor** | Setting
+motor function |**subfunction**    |**subfunction** | values
 ---         | :-:     | :-: | :-:
 TargetPosition |tp|targetpos |
 CurrentPosition|cp|currentpos|
@@ -88,12 +88,12 @@ Test|test|
 Load|ld|load|
 Startup|st|startup |
 
-**Input**|i|input
+**input function**|subfunction|subfunction
 ---         | :-:     | :-:
 InputFunction|if|inputfunction
 StartUp|st|startup
 
-**Functions**|f|function
+**system function**|subfunction|subfunction
 ---         | :-:     | :-:
 Start|s|start
 Stop|t|stop
@@ -117,13 +117,15 @@ If not already satisfied:
 * Install it by running the executable (.exe) file
 
 ### Prepare Arduino IDE:
-* Download and install the Arduino IDE from the official page: https://www.arduino.cc/en/Main/Software (or get it from the Software folder)
+* Download and install the Arduino IDE (Version 1.8.12) from the official page: https://www.arduino.cc/en/Main/Software (or get it from the Software folder)
 
 * Start the Arduino IDE and add **Stm32duino** as follows:
   + Go to **File->Preferences**. Under the section **Additional Boards Manager URLs**:
     
   
-       ```https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json  ```
+       ```https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json  ```  
+       
+**Note:** Please use exacatly this version, even if its deprecated
        
   <br><br>
   ![](Documentation/Images/additional_boards.png)     
@@ -165,13 +167,13 @@ Replace following two files on your computer with the files you find inside the 
   + Replace **usbd_cdc_if.c** inside:  
   ```C:\Users\username\AppData\Local\Arduino15\packages\STM32\hardware\stm32\1.8.0\cores\arduino\stm32\usb\cdc```
   **or**
-  ```C:\Users\username\Documents\ArduinoData\packages\STM32\hardware\stm32\1.9.0\cores\arduino\stm32\usb\cdc ```
+  ```C:\Users\username\Documents\ArduinoData\packages\STM32\hardware\stm32\1.8.0\cores\arduino\stm32\usb\cdc ```  
    **-** depending on location of your installation (it could also be a different location). 
   
   + Replace **variant.c** inside:  
   ```C:\Users\username\AppData\Local\Arduino15\packages\STM32\hardware\stm32\1.8.0\variants\NUCLEO_L476RG ``` 
   **or**
-  ```C:\Users\username\Documents\ArduinoData\packages\STM32\hardware\stm32\1.8.0\variants\NUCLEO_L476RG ```
+  ```C:\Users\username\Documents\ArduinoData\packages\STM32\hardware\stm32\1.8.0\variants\NUCLEO_L476RG ```  
    **-** depending on location of your installation (it could also be a different location). 
 
 ### Add the **STM32duino_FreeRTOS.zip** to the Arduino IDE:
@@ -272,5 +274,21 @@ Tested on Ubuntu 20.04.
 
 * If you whant to use a **STM32nucleo** to program over **ST-Link** it might be necessary to give permission to the USB device (as described here: https://stackoverflow.com/questions/22713834/libusb-cannot-open-usb-device-permission-isse-netbeans-ubuntu): 
  ``` sudo chmod o+w /dev/bus/usb/123/456 ```
+
+## Upload from STM32Cube
+
+If you are not able to upload your project via the Arduino IDE you can try to upload the compiled project file with STM32Cube as follows:
+
+* Compile your project in the Arduino IDE. Go to **->Sketch->Export compiled Binary**.
+
+* Set your MonsterrhinoMotion in boot mode and connect it via STM32CubeProgrammer (see "Install STM32CubeProgrammer").
+
+* Upload the compiled Hex-File to STM32CubeProgrammer with the task **->Open File** (next to Device memory).
+
+* Press button **Download** to load your project to the device.
+
+<br><br>
+![](Documentation/Images/cubeProgrammer_upload.png) 
+<br><br>
 
   
